@@ -16,9 +16,16 @@
                   <MenuItem mnemonicParsing="false" onAction="#export" text="Export as image" />
                   <MenuItem mnemonicParsing="false" onAction="#settingsDialog" text="Settings" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#exit" text="Exit" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Plot">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#mandelbrot" text="Mandelbrot" />
+                  <MenuItem mnemonicParsing="false" onAction="#newtonRaphson" text="Newton Raphson" />
+                  <MenuItem mnemonicParsing="false" text="Julia" />
+               </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
@@ -32,7 +39,7 @@
          <children>
             <HBox alignment="CENTER">
                <children>
-                   <Button graphicTextGap="5.0" minHeight="35.0" mnemonicParsing="false" onAction="#updateFractal" text="Update Fractal">
+                   <Button fx:id="update" disable="true" graphicTextGap="5.0" minHeight="35.0" mnemonicParsing="false" onAction="#updateFractal" text="Update Fractal">
                        <graphic>
                            <ImageView pickOnBounds="true" preserveRatio="true">
                                <Image url="@../img/reload.png" />

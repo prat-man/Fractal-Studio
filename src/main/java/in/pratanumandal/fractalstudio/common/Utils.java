@@ -1,6 +1,10 @@
 package in.pratanumandal.fractalstudio.common;
 
 import in.pratanumandal.fractalstudio.gui.GUI;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.swing.*;
@@ -31,6 +35,14 @@ public class Utils {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static Alert setDefaultButton(Alert alert, ButtonType defBtn) {
+        DialogPane pane = alert.getDialogPane();
+        for (ButtonType t : alert.getButtonTypes()) {
+            ((Button) pane.lookupButton(t)).setDefaultButton(t == defBtn);
+        }
+        return alert;
     }
 
 }

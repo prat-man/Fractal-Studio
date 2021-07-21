@@ -7,6 +7,7 @@ import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
 import in.pratanumandal.fractalstudio.mandelbrot.Mandelbrot;
+import in.pratanumandal.fractalstudio.newton.NewtonRaphson;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.embed.swing.SwingFXUtils;
@@ -28,6 +29,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 import org.controlsfx.control.ToggleSwitch;
 
@@ -48,6 +51,8 @@ public class Controller {
     @FXML private StackPane canvasHolder;
     @FXML private ScrollPane canvasScroll;
 
+    @FXML private Button update;
+
     @FXML private ToggleSwitch smooth;
     @FXML private ToggleSwitch inverted;
     @FXML private ToggleSwitch monochrome;
@@ -60,6 +65,8 @@ public class Controller {
 
     @FXML private Spinner<Double> scale;
     @FXML private Spinner<Double> zoom;
+
+    private Fractal fractal;
 
     private double currentXCenter;
     private double currentYCenter;
@@ -114,14 +121,27 @@ public class Controller {
     }
 
     @FXML
+    private void mandelbrot() {
+        fractal = new Mandelbrot(canvas);
+        this.updateFractal();
+    }
+
+    @FXML
+    private void newtonRaphson() {
+        fractal = new NewtonRaphson(canvas);
+        this.updateFractal();
+    }
+
+    @FXML
     private void updateFractal() {
+        update.setDisable(false);
+
         canvas.setWidth(Configuration.getCanvasSize());
         canvas.setHeight(Configuration.getCanvasSize());
 
         currentXCenter = Double.valueOf(centerX.getText());
         currentYCenter = Double.valueOf(centerY.getText());
 
-        Fractal fractal = new Mandelbrot(canvas);
         fractal.setScale((scale.getValue() == null ? 2.0 : scale.getValue()) / (zoom.getValue() == null ? 1.0 : zoom.getValue()));
         fractal.setSmooth(smooth.isSelected());
         fractal.setInverted(inverted.isSelected());
@@ -197,8 +217,7 @@ public class Controller {
         alert.getButtonTypes().clear();
         alert.getButtonTypes().addAll(cancel, apply);
 
-        Button applyButton = (Button) alert.getDialogPane().lookupButton(apply);
-        applyButton.setDefaultButton(true);
+        Utils.setDefaultButton(alert, cancel);
 
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/settings.fxml"));
 
@@ -308,8 +327,9 @@ public class Controller {
     }
 
     @FXML
-    private void close() {
-        Platform.exit();
+    private void exit() {
+        Window window = canvas.getScene().getWindow();
+        window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
     private void progressDialog(Fractal fractal, Thread thread) {

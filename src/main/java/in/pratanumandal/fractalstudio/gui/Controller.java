@@ -1,6 +1,7 @@
 package in.pratanumandal.fractalstudio.gui;
 
-import in.pratanumandal.fractalstudio.core.Configuration;
+import in.pratanumandal.fractalstudio.common.Configuration;
+import in.pratanumandal.fractalstudio.common.Constants;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
@@ -150,7 +151,7 @@ public class Controller {
 
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Fractals");
+                    alert.setTitle(Constants.APPLICATION_TITLE);
                     alert.setHeaderText("Save");
                     alert.setContentText("Fractal has been saved to file: " + file.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
@@ -161,7 +162,7 @@ public class Controller {
 
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Fractals");
+                    alert.setTitle(Constants.APPLICATION_TITLE);
                     alert.setHeaderText("Error");
                     alert.setContentText("Failed to save fractal to file: " + file.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
@@ -174,7 +175,7 @@ public class Controller {
     @FXML
     private void settingsDialog() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Fractals");
+        alert.setTitle(Constants.APPLICATION_TITLE);
         alert.setHeaderText("Settings");
 
         ButtonType apply = new ButtonType("Apply", ButtonBar.ButtonData.APPLY);
@@ -221,7 +222,7 @@ public class Controller {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alertReference.set(alert);
 
-            alert.setTitle("Fractals");
+            alert.setTitle(Constants.APPLICATION_TITLE);
             alert.setHeaderText("Generating fractal");
 
             ButtonType abort = new ButtonType("Abort", ButtonBar.ButtonData.OTHER);

@@ -1,4 +1,4 @@
-package in.pratanumandal.fractalstudio.core;
+package in.pratanumandal.fractalstudio.common;
 
 public class Configuration {
 

@@ -1,5 +1,6 @@
 package in.pratanumandal.fractalstudio.core;
 
+import in.pratanumandal.fractalstudio.common.Configuration;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;

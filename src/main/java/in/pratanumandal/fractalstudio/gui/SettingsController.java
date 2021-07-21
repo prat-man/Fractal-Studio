@@ -1,6 +1,6 @@
 package in.pratanumandal.fractalstudio.gui;
 
-import in.pratanumandal.fractalstudio.core.Configuration;
+import in.pratanumandal.fractalstudio.common.Configuration;
 import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
 

@@ -27,7 +27,7 @@ public class Utils {
                 Object object = getApplication.invoke(null);
                 Method setDockImage = clazz.cast(object).getClass().getMethod("setDockIconImage", Image.class);
 
-                URL iconURL = Utils.class.getClassLoader().getResource("img/icon-large.png");
+                URL iconURL = Utils.class.getClassLoader().getResource("img/icon.png");
                 Image image = new ImageIcon(iconURL).getImage();
 
                 setDockImage.invoke(object, image);

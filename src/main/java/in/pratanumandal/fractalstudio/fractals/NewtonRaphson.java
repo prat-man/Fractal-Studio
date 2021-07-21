@@ -17,7 +17,12 @@ public class NewtonRaphson extends Fractal {
 
     public NewtonRaphson(Canvas canvas) {
         super(canvas);
+    }
+
+    @Override
+    public void run() {
         this.colorMap = new HashMap<>();
+        super.run();
     }
 
     private Complex function(Complex z) {
@@ -63,11 +68,13 @@ public class NewtonRaphson extends Fractal {
         if (root == null) return null;
 
         Color color;
-        if (colorMap.containsKey(root.root)) {
-            color = colorMap.get(root.root);
-        } else {
-            color = generateColor();
-            colorMap.put(root.root, color);
+        synchronized (colorMap) {
+            if (colorMap.containsKey(root.root)) {
+                color = colorMap.get(root.root);
+            } else {
+                color = generateColor();
+                colorMap.put(root.root, color);
+            }
         }
 
         return Color.color(color.getRed(), color.getBlue(), color.getGreen(), getAlpha(root.iteration));

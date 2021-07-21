@@ -97,7 +97,7 @@ public abstract class Fractal implements Runnable {
     }
 
     @Override
-    public final void run() {
+    public void run() {
         kill = false;
         kernels = new HashMap<>();
 

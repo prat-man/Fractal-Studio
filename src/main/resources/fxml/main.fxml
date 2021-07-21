@@ -13,7 +13,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#export" text="Export as image" />
+                  <MenuItem mnemonicParsing="false" onAction="#export" text="Export as Image" />
                   <MenuItem mnemonicParsing="false" onAction="#settingsDialog" text="Settings" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#exit" text="Exit" />

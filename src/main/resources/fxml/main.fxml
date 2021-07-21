@@ -16,12 +16,12 @@
                   <MenuItem mnemonicParsing="false" onAction="#export" text="Export as image" />
                   <MenuItem mnemonicParsing="false" onAction="#settingsDialog" text="Settings" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
             </items>
           </Menu>
         </menus>

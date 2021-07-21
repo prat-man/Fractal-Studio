@@ -2,6 +2,7 @@ package in.pratanumandal.fractalstudio.gui;
 
 import in.pratanumandal.fractalstudio.common.Configuration;
 import in.pratanumandal.fractalstudio.common.Constants;
+import in.pratanumandal.fractalstudio.common.Utils;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
@@ -11,13 +12,20 @@ import javafx.beans.binding.Bindings;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FilenameUtils;
@@ -128,6 +136,12 @@ public class Controller {
     }
 
     @FXML
+    private void resetCenter() {
+        centerX.setText("0");
+        centerY.setText("0");
+    }
+
+    @FXML
     private void export() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save");
@@ -151,7 +165,7 @@ public class Controller {
 
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(Constants.APPLICATION_TITLE);
+                    alert.setTitle(Constants.APPLICATION_NAME);
                     alert.setHeaderText("Save");
                     alert.setContentText("Fractal has been saved to file: " + file.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
@@ -162,7 +176,7 @@ public class Controller {
 
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle(Constants.APPLICATION_TITLE);
+                    alert.setTitle(Constants.APPLICATION_NAME);
                     alert.setHeaderText("Error");
                     alert.setContentText("Failed to save fractal to file: " + file.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
@@ -175,7 +189,7 @@ public class Controller {
     @FXML
     private void settingsDialog() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(Constants.APPLICATION_TITLE);
+        alert.setTitle(Constants.APPLICATION_NAME);
         alert.setHeaderText("Settings");
 
         ButtonType apply = new ButtonType("Apply", ButtonBar.ButtonData.APPLY);
@@ -210,9 +224,92 @@ public class Controller {
     }
 
     @FXML
-    private void resetCenter() {
-        centerX.setText("0");
-        centerY.setText("0");
+    private void about() {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(Constants.APPLICATION_NAME);
+
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.OK);
+        closeButton.setVisible(false);
+        closeButton.setManaged(false);
+
+        VBox vBox = new VBox();
+        vBox.getStyleClass().add("about");
+        vBox.setAlignment(Pos.CENTER);
+
+        ImageView imageView1 = new ImageView();
+        Image image1 = new Image(getClass().getClassLoader().getResourceAsStream("img/icon-large.png"));
+        imageView1.setImage(image1);
+        imageView1.setFitWidth(96.0);
+        imageView1.setFitHeight(96.0);
+        imageView1.getStyleClass().add("icon");
+        vBox.getChildren().add(imageView1);
+
+        Label label1 = new Label(Constants.APPLICATION_NAME + " " + Constants.APPLICATION_VERSION);
+        label1.getStyleClass().add("title");
+        vBox.getChildren().add(label1);
+
+        Hyperlink hyperlink1 = new Hyperlink("https://github.com/prat-man/Fractal-Studio");
+        hyperlink1.getStyleClass().add("hyperlink");
+        hyperlink1.setOnAction(event -> {
+            Utils.browseURL("https://github.com/prat-man/Fractal-Studio");
+        });
+        vBox.getChildren().add(hyperlink1);
+
+        Label label2 = new Label("from");
+        label2.getStyleClass().add("subheading1");
+        vBox.getChildren().add(label2);
+
+        Label label3 = new Label("Pratanu Mandal");
+        label3.getStyleClass().add("subheading2");
+        vBox.getChildren().add(label3);
+
+        Hyperlink hyperlink2 = new Hyperlink("https://pratanumandal.in/");
+        hyperlink2.getStyleClass().add("hyperlink");
+        hyperlink2.setOnAction(event -> {
+            Utils.browseURL("https://pratanumandal.in/");
+        });
+        vBox.getChildren().add(hyperlink2);
+
+        Label label4 = new Label("with");
+        label4.getStyleClass().add("subheading3");
+        vBox.getChildren().add(label4);
+
+        ImageView imageView2 = new ImageView();
+        Image image2 = new Image(getClass().getClassLoader().getResourceAsStream("img/heart.png"));
+        imageView2.setImage(image2);
+        imageView2.setFitWidth(48.0);
+        imageView2.setFitHeight(48.0);
+        vBox.getChildren().add(imageView2);
+
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().add(hBox);
+
+        Hyperlink hyperlink3 = new Hyperlink("Licensed under GPL v3.0");
+        hyperlink3.getStyleClass().add("subheading4");
+        hyperlink3.setOnAction(event -> {
+            Utils.browseURL("https://github.com/prat-man/Fractal-Studio/blob/master/LICENSE");
+        });
+        vBox.getChildren().add(hyperlink3);
+
+        AnchorPane pane = new AnchorPane();
+        pane.getChildren().add(vBox);
+
+        AnchorPane.setTopAnchor(vBox, 0.0);
+        AnchorPane.setRightAnchor(vBox, 0.0);
+        AnchorPane.setBottomAnchor(vBox, 0.0);
+        AnchorPane.setLeftAnchor(vBox, 0.0);
+
+        dialog.getDialogPane().contentProperty().set(pane);
+
+        dialog.initOwner(canvas.getScene().getWindow());
+        dialog.showAndWait();
+    }
+
+    @FXML
+    private void close() {
+        Platform.exit();
     }
 
     private void progressDialog(Fractal fractal, Thread thread) {
@@ -222,7 +319,7 @@ public class Controller {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alertReference.set(alert);
 
-            alert.setTitle(Constants.APPLICATION_TITLE);
+            alert.setTitle(Constants.APPLICATION_NAME);
             alert.setHeaderText("Generating fractal");
 
             ButtonType abort = new ButtonType("Abort", ButtonBar.ButtonData.OTHER);

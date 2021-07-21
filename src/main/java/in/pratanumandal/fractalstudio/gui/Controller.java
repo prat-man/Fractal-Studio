@@ -6,8 +6,9 @@ import in.pratanumandal.fractalstudio.common.Utils;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
-import in.pratanumandal.fractalstudio.mandelbrot.Mandelbrot;
-import in.pratanumandal.fractalstudio.newton.NewtonRaphson;
+import in.pratanumandal.fractalstudio.fractals.Julia;
+import in.pratanumandal.fractalstudio.fractals.Mandelbrot;
+import in.pratanumandal.fractalstudio.fractals.NewtonRaphson;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.embed.swing.SwingFXUtils;
@@ -32,6 +33,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.math3.complex.Complex;
 import org.controlsfx.control.ToggleSwitch;
 
 import javax.imageio.ImageIO;
@@ -134,7 +136,8 @@ public class Controller {
 
     @FXML
     private void julia() {
-
+        fractal = new Julia(canvas, new Complex(-0.835, -0.2321));
+        this.updateFractal();
     }
 
     @FXML

@@ -1,4 +1,4 @@
-package in.pratanumandal.fractalstudio.newton;
+package in.pratanumandal.fractalstudio.fractals;
 
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;

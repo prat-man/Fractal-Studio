@@ -1,20 +1,14 @@
-package in.pratanumandal.fractalstudio.mandelbrot;
+package in.pratanumandal.fractalstudio.fractals;
 
 import in.pratanumandal.fractalstudio.core.Fractal;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Mandelbrot extends Fractal {
-
-    private Map<Complex, Color> colorMap;
 
     public Mandelbrot(Canvas canvas) {
         super(canvas);
-        this.colorMap = new HashMap<>();
     }
 
     private Double mandlebrot(Complex c) {

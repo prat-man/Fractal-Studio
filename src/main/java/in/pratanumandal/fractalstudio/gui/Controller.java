@@ -133,6 +133,11 @@ public class Controller {
     }
 
     @FXML
+    private void julia() {
+
+    }
+
+    @FXML
     private void updateFractal() {
         update.setDisable(false);
 

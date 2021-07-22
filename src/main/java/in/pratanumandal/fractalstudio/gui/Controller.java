@@ -45,6 +45,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Controller {
@@ -100,8 +101,14 @@ public class Controller {
             else canvas.setCursor(Cursor.DEFAULT);
         });
 
-        canvas.setOnMouseClicked(event -> {
-            if (pickCenter.isSelected()) {
+        AtomicBoolean dragged = new AtomicBoolean(false);
+        canvas.setOnMouseDragged(event -> {
+            canvas.setCursor(Cursor.MOVE);
+            dragged.set(true);
+        });
+
+        canvas.setOnMouseReleased(event -> {
+            if (pickCenter.isSelected() && !dragged.get()) {
                 double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / (zoom.getValue() == null ? 1.0 : zoom.getValue());
                 double xCenter = FractalUtils.precision(((event.getX() / canvas.getWidth()) - 0.5) * 2.0 * factor + currentXCenter, 11);
                 double yCenter = FractalUtils.precision((0.5 - (event.getY() / canvas.getHeight())) * 2.0 * factor + currentYCenter, 11);
@@ -109,6 +116,10 @@ public class Controller {
                 centerY.setText(String.valueOf(yCenter));
                 pickCenter.setSelected(false);
             }
+
+            if (pickCenter.isSelected()) canvas.setCursor(Cursor.HAND);
+            else canvas.setCursor(Cursor.DEFAULT);
+            dragged.set(false);
         });
 
         Platform.runLater(() -> {

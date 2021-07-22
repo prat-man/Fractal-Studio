@@ -113,7 +113,7 @@
       </VBox>
    </left>
    <center>
-      <ScrollPane fx:id="canvasScroll" prefHeight="300.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="canvasScroll" pannable="true" prefHeight="300.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <content>
             <StackPane fx:id="canvasHolder">
                <children>

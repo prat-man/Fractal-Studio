@@ -21,8 +21,8 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Plot">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#mandelbrot" text="Mandelbrot" />
                   <MenuItem mnemonicParsing="false" onAction="#newtonRaphson" text="Newton Raphson" />
+                  <MenuItem mnemonicParsing="false" onAction="#mandelbrot" text="Mandelbrot" />
                   <MenuItem mnemonicParsing="false" onAction="#julia" text="Julia" />
                </items>
             </Menu>
@@ -58,7 +58,7 @@
             <ToggleSwitch fx:id="smooth" selected="true" text="Smooth" />
             <Separator />
             <ToggleSwitch fx:id="inverted" text="Inverted" />
-            <ToggleSwitch fx:id="monochrome" disable="true" layoutX="20.0" layoutY="20.0" text="Monochrome" />
+            <ToggleSwitch fx:id="monochrome" layoutX="20.0" layoutY="20.0" text="Monochrome" />
             <Separator />
             <ToggleSwitch fx:id="showOrigin" layoutX="100.0" layoutY="89.0" text="Show origin" />
             <Separator layoutX="20.0" layoutY="117.0" />

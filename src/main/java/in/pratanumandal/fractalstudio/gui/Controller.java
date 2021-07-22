@@ -83,8 +83,8 @@ public class Controller {
                         canvasScroll.getViewportBounds().getHeight(),
                 canvasScroll.viewportBoundsProperty()));
 
-        inverted.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            this.monochrome.setDisable(!newVal);
+        monochrome.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            inverted.setDisable(newVal);
         });
 
         centerX.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -225,7 +225,7 @@ public class Controller {
         alert.getButtonTypes().clear();
         alert.getButtonTypes().addAll(cancel, apply);
 
-        Utils.setDefaultButton(alert, cancel);
+        Utils.setDefaultButton(alert, apply);
 
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/settings.fxml"));
 

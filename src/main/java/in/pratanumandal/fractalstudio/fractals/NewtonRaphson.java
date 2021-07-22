@@ -11,7 +11,8 @@ import java.util.Map;
 
 public class NewtonRaphson extends Fractal {
 
-    public static final double EPSILON = 0.000001;
+    private static final double MAX_ITERATIONS = 100.0;
+    private static final double EPSILON = 0.000001;
 
     private Map<Complex, Color> colorMap;
 
@@ -38,14 +39,14 @@ public class NewtonRaphson extends Fractal {
         Complex last = null;
         Complex f;
 
-        while ((f = function(z)).abs() >= EPSILON && iteration <= 100) {
+        while ((f = function(z)).abs() >= EPSILON && iteration <= MAX_ITERATIONS) {
             last = z;
             Complex h = function(z).divide(derivative(z));
             z = z.subtract(h);
             iteration++;
         }
 
-        if (f.equals(Complex.NaN) || iteration > 100) return null;
+        if (f.equals(Complex.NaN) || iteration > MAX_ITERATIONS) return null;
 
         if (last != null && this.isSmooth()) {
             Complex root = new Complex(FractalUtils.precision(z.getReal(), 7), FractalUtils.precision(z.getImaginary(), 7));
@@ -81,7 +82,7 @@ public class NewtonRaphson extends Fractal {
     }
 
     private Color generateColor() {
-        if (this.isInverted() && this.isMonochrome()) return Color.WHITE;
+        if (this.isMonochrome()) return Color.WHITE;
         return Color.hsb(360.0 * Math.random(), 0.2 + 0.8 * Math.random(), 0.7 + 0.3 * Math.random());
     }
 

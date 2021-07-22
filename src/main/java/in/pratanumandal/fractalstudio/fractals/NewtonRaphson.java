@@ -87,12 +87,17 @@ public class NewtonRaphson extends Fractal {
     }
 
     private double getAlpha(double iteration) {
-        if (this.isInverted()) {
+        if (this.isMonochrome()) {
+            if (this.isInverted())
+                return 1.0 - Math.max(Math.min(iteration / 30.0, 0.9), 0.0);
+
             return Math.max(Math.min(iteration / 30.0, 1.0), 0.1);
         }
-        else {
-            return 1.0 - Math.max(Math.min(iteration / 30.0, 0.9), 0.0);
-        }
+
+        if (this.isInverted())
+            return Math.max(Math.min(iteration / 30.0, 1.0), 0.1);
+
+        return 1.0 - Math.max(Math.min(iteration / 30.0, 0.9), 0.0);
     }
 
     class Root {

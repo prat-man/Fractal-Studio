@@ -83,10 +83,6 @@ public class Controller {
                         canvasScroll.getViewportBounds().getHeight(),
                 canvasScroll.viewportBoundsProperty()));
 
-        monochrome.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            inverted.setDisable(newVal);
-        });
-
         centerX.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.matches("[+-]?\\d*(\\.\\d*)?")) {
                 centerX.setText(oldVal);

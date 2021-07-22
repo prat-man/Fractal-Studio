@@ -90,8 +90,12 @@ public class Julia extends Fractal {
         Double iteration = this.julia(z);
         if (iteration == null) return Color.BLACK;
 
-        if (this.isMonochrome())
+        if (this.isMonochrome()) {
+            if (this.isInverted())
+                return Color.hsb(0.0, 0.0, Math.max(1.0 - iteration / MAX_ITERATIONS, 0.0));
+
             return Color.hsb(0.0, 0.0, Math.min(iteration / MAX_ITERATIONS, 1.0));
+        }
 
         if (this.isInverted()) {
             if (this.isSmooth())

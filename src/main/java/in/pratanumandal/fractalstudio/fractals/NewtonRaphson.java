@@ -12,9 +12,17 @@ import java.util.Map;
 public class NewtonRaphson extends Fractal {
 
     private static final double MAX_ITERATIONS = 100.0;
-    private static final double EPSILON = 0.000001;
+    private static final double EPSILON = 0.001;
+
+    private static final Color[] COLORS = {
+            Color.RED,
+            Color.rgb(57,125,209),
+            Color.GREEN,
+            Color.rgb(255,170,0)
+    };
 
     private Map<Complex, Color> colorMap;
+    private double scalingFactor;
 
     public NewtonRaphson(Canvas canvas) {
         super(canvas);
@@ -23,10 +31,12 @@ public class NewtonRaphson extends Fractal {
     @Override
     public void run() {
         this.colorMap = new HashMap<>();
+        this.scalingFactor = Math.log(this.getScale() > 1 ? this.getScale() : 1.0 / this.getScale()) / Math.log(2);
         super.run();
     }
 
     private Complex function(Complex z) {
+        //return z.pow(8).add(z.pow(4).multiply(15)).subtract(16);
         return z.pow(3).subtract(1);
     }
 
@@ -49,7 +59,7 @@ public class NewtonRaphson extends Fractal {
         if (f.equals(Complex.NaN) || iteration > MAX_ITERATIONS) return null;
 
         if (last != null && this.isSmooth()) {
-            Complex root = new Complex(FractalUtils.precision(z.getReal(), 7), FractalUtils.precision(z.getImaginary(), 7));
+            Complex root = new Complex(FractalUtils.precision(z.getReal(), 3), FractalUtils.precision(z.getImaginary(), 3));
 
             double delta = (Math.log10(EPSILON) - Math.log10(Math.abs(last.subtract(root).abs()))) /
                     (Math.log10(Math.abs(z.subtract(root).abs())) - Math.log10(Math.abs(last.subtract(root).abs())));
@@ -57,7 +67,7 @@ public class NewtonRaphson extends Fractal {
             iteration += delta;
         }
 
-        Complex root = new Complex(FractalUtils.precision(z.getReal(), 5), FractalUtils.precision(z.getImaginary(), 5));
+        Complex root = new Complex(FractalUtils.precision(z.getReal(), 2), FractalUtils.precision(z.getImaginary(), 2));
 
         return new Root(root, iteration);
     }
@@ -78,26 +88,29 @@ public class NewtonRaphson extends Fractal {
             }
         }
 
-        return Color.color(color.getRed(), color.getBlue(), color.getGreen(), getAlpha(root.iteration));
+        return Color.color(color.getRed(), color.getGreen(), color.getBlue(), getAlpha(root.iteration));
     }
 
     private Color generateColor() {
         if (this.isMonochrome()) return Color.WHITE;
+        if (this.colorMap.size() < COLORS.length) return COLORS[this.colorMap.size()];
         return Color.hsb(360.0 * Math.random(), 0.2 + 0.8 * Math.random(), 0.7 + 0.3 * Math.random());
     }
 
     private double getAlpha(double iteration) {
+        double scaledIter = iteration - this.scalingFactor;
+
         if (this.isMonochrome()) {
             if (this.isInverted())
-                return 1.0 - Math.max(Math.min(iteration / 30.0, 0.9), 0.0);
+                return Math.max(Math.min(1.0 - scaledIter / 30.0, 1.0), 0.0);
 
-            return Math.max(Math.min(iteration / 30.0, 1.0), 0.1);
+            return Math.max(Math.min(scaledIter / 30.0, 1.0), 0.0);
         }
 
         if (this.isInverted())
-            return Math.max(Math.min(iteration / 30.0, 1.0), 0.1);
+            return Math.max(Math.min(scaledIter / 30.0, 1.0), 0.0);
 
-        return 1.0 - Math.max(Math.min(iteration / 30.0, 0.9), 0.0);
+        return Math.max(Math.min(1.0 - scaledIter / 30.0, 1.0), 0.0);
     }
 
     class Root {

@@ -187,6 +187,10 @@ public abstract class Fractal implements Runnable {
         }
     }
 
+    public boolean isInterrupted() {
+        return kill;
+    }
+
     public double getProgress() {
         long processed = 0;
         for (Kernel kernel : kernels.keySet()) {

@@ -12,7 +12,7 @@ import java.util.Map;
 public class NewtonRaphson extends Fractal {
 
     private static final double MAX_ITERATIONS = 100.0;
-    private static final double EPSILON = 0.001;
+    private static final double EPSILON = Math.pow(10, -6);
 
     private static final Color[] COLORS = {
             Color.RED,
@@ -46,28 +46,27 @@ public class NewtonRaphson extends Fractal {
 
     private Root newtonRaphson(Complex z) {
         double iteration = 0;
-        Complex last = null;
-        Complex f;
+        Complex last = z;
+        Complex secondLast;
 
-        while ((f = function(z)).abs() >= EPSILON && iteration <= MAX_ITERATIONS) {
+        do {
+            secondLast = last;
             last = z;
             Complex h = function(z).divide(derivative(z));
             z = z.subtract(h);
             iteration++;
         }
+        while (z.subtract(last).abs() > EPSILON && iteration < MAX_ITERATIONS);
 
-        if (f.equals(Complex.NaN) || iteration > MAX_ITERATIONS) return null;
+        if (function(z).equals(Complex.NaN) || iteration > MAX_ITERATIONS) return null;
 
-        if (last != null && this.isSmooth()) {
-            Complex root = new Complex(FractalUtils.precision(z.getReal(), 3), FractalUtils.precision(z.getImaginary(), 3));
-
-            double delta = (Math.log10(EPSILON) - Math.log10(Math.abs(last.subtract(root).abs()))) /
-                    (Math.log10(Math.abs(z.subtract(root).abs())) - Math.log10(Math.abs(last.subtract(root).abs())));
-
-            iteration += delta;
+        if (last != null && secondLast != null && this.isSmooth()) {
+            double prevR = Math.log10(last.subtract(secondLast).abs());
+            double delta = (Math.log10(EPSILON) - prevR) / (Math.log10(z.subtract(last).abs()) - prevR);
+            iteration += Math.max(Math.min(delta, 1), 0);
         }
 
-        Complex root = new Complex(FractalUtils.precision(z.getReal(), 2), FractalUtils.precision(z.getImaginary(), 2));
+        Complex root = new Complex(FractalUtils.precision(z.getReal(), ((int) -Math.log10(EPSILON)) - 1), FractalUtils.precision(z.getImaginary(), ((int) -Math.log10(EPSILON)) - 1));
 
         return new Root(root, iteration);
     }

@@ -2,9 +2,11 @@ package in.pratanumandal.fractalstudio.fractals;
 
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
+import in.pratanumandal.fractalstudio.expression.ComplexProcessor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
+import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +26,11 @@ public class NewtonRaphson extends Fractal {
     private Map<Complex, Color> colorMap;
     private double scalingFactor;
 
-    public NewtonRaphson(Canvas canvas) {
+    public final String function;
+
+    public NewtonRaphson(Canvas canvas, String function) {
         super(canvas);
+        this.function = function;
     }
 
     @Override
@@ -36,8 +41,11 @@ public class NewtonRaphson extends Fractal {
     }
 
     private Complex function(Complex z) {
-        //return z.pow(8).add(z.pow(4).multiply(15)).subtract(16);
-        return z.pow(3).subtract(1);
+        ComplexProcessor processor = new ComplexProcessor();
+        processor.variables.put("z", z);
+
+        ExpressionParser<Complex> parser = processor.createParser();
+        return parser.parse(this.function);
     }
 
     private Complex derivative(Complex z) {

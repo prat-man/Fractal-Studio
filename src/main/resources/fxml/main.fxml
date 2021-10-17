@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.canvas.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import org.controlsfx.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.ToggleSwitch?>
 
 <BorderPane xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.pratanumandal.fractalstudio.gui.Controller">
    <top>

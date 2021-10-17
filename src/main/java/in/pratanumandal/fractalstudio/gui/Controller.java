@@ -6,6 +6,7 @@ import in.pratanumandal.fractalstudio.common.Utils;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
+import in.pratanumandal.fractalstudio.expression.ComplexProcessor;
 import in.pratanumandal.fractalstudio.fractals.Julia;
 import in.pratanumandal.fractalstudio.fractals.Mandelbrot;
 import in.pratanumandal.fractalstudio.fractals.NewtonRaphson;
@@ -14,13 +15,24 @@ import javafx.beans.binding.Bindings;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -35,6 +47,8 @@ import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.complex.Complex;
 import org.controlsfx.control.ToggleSwitch;
+import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.ParsingException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -137,14 +151,22 @@ public class Controller {
 
     @FXML
     private void newtonRaphson() {
-        fractal = new NewtonRaphson(canvas);
-        this.updateFractal();
+        String function = showFunctionDialog();
+
+        if (function != null) {
+            fractal = new NewtonRaphson(canvas, function);
+            this.updateFractal();
+        }
     }
 
     @FXML
     private void julia() {
-        fractal = new Julia(canvas, new Complex(-0.835, -0.2321));
-        this.updateFractal();
+        String function = showFunctionDialog();
+
+        if (function != null) {
+            fractal = new Julia(canvas, function);
+            this.updateFractal();
+        }
     }
 
     @FXML
@@ -406,6 +428,58 @@ public class Controller {
         });
 
         fractalThread.start();
+    }
+
+    private String showFunctionDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        alert.setTitle(Constants.APPLICATION_NAME);
+        alert.setHeaderText("Function");
+
+        VBox vbox = new VBox();
+        vbox.setPrefWidth(360);
+
+        Label label = new Label("Enter the function to generate the fractal.\nUse z as the complex variable.");
+        label.setWrapText(true);
+        label.setPadding(new Insets(0, 0, 20, 0));
+
+        TextField textField = new TextField();
+
+        vbox.getChildren().addAll(label, textField);
+
+        alert.getDialogPane().contentProperty().set(vbox);
+
+        Node button = alert.getDialogPane().lookupButton(ButtonType.OK);
+        button.disableProperty().bind(Bindings.isEmpty(textField.textProperty()));
+
+        alert.initOwner(canvas.getScene().getWindow());
+        alert.showAndWait();
+
+        if (alert.getResult() == ButtonType.OK) {
+            String function = textField.getText();
+
+            try {
+                ComplexProcessor processor = new ComplexProcessor();
+                processor.variables.put("z", Complex.ZERO);
+                ExpressionParser<Complex> parser = processor.createParser();
+                parser.parse(function);
+            }
+            catch (ParsingException e) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
+                alert.setHeaderText("Invalid function");
+                errorAlert.initOwner(canvas.getScene().getWindow());
+                errorAlert.showAndWait();
+
+                return null;
+            }
+            catch (Exception e) {
+                // Do nothing
+            }
+
+            return function;
+        }
+
+        return null;
     }
 
 }

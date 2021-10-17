@@ -1,9 +1,11 @@
 package in.pratanumandal.fractalstudio.fractals;
 
 import in.pratanumandal.fractalstudio.core.Fractal;
+import in.pratanumandal.fractalstudio.expression.ComplexProcessor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
+import org.kobjects.expressionparser.ExpressionParser;
 
 public class Julia extends Fractal {
 
@@ -58,20 +60,28 @@ public class Julia extends Fractal {
         }
     }
 
-    private Complex c;
+    public final String function;
 
-    public Julia(Canvas canvas, Complex c) {
+    public Julia(Canvas canvas, String function) {
         super(canvas);
-        this.c = c;
+        this.function = function;
+    }
+
+    private Complex function(Complex z) {
+        ComplexProcessor processor = new ComplexProcessor();
+        processor.variables.put("z", z);
+
+        ExpressionParser<Complex> parser = processor.createParser();
+        return parser.parse(this.function);
     }
 
     private Double julia(Complex z) {
         double iteration = 0;
         Complex last = null;
 
-        while (z.abs() <= 2.0 && iteration < MAX_ITERATIONS) {
+        while (z.abs() < 2.0 && iteration < MAX_ITERATIONS) {
             last = z;
-            z = z.multiply(z).add(c);
+            z = function(z);
             iteration++;
         }
 

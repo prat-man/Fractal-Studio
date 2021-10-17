@@ -83,6 +83,9 @@ public class Controller {
     @FXML private Spinner<Double> scale;
     @FXML private Spinner<Double> zoom;
 
+    @FXML private Label fractalName;
+    @FXML private Label fractalFunction;
+
     private Fractal fractal;
 
     private double currentXCenter;
@@ -145,6 +148,9 @@ public class Controller {
 
     @FXML
     private void mandelbrot() {
+        fractalName.setText("Mandelbrot");
+        fractalFunction.setText("");
+
         fractal = new Mandelbrot(canvas);
         this.updateFractal();
     }
@@ -154,6 +160,9 @@ public class Controller {
         String function = showFunctionDialog();
 
         if (function != null) {
+            fractalName.setText("Newton Raphson");
+            fractalFunction.setText(function);
+
             fractal = new NewtonRaphson(canvas, function);
             this.updateFractal();
         }
@@ -164,6 +173,9 @@ public class Controller {
         String function = showFunctionDialog();
 
         if (function != null) {
+            fractalName.setText("Julia");
+            fractalFunction.setText(function);
+
             fractal = new Julia(canvas, function);
             this.updateFractal();
         }

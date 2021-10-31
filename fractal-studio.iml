@@ -35,6 +35,14 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.11" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: com.github.stefanhaustein.expressionparser:core:v3.0.1" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: in.pratanumandal:expr4j:1.0">
+        <CLASSES>
+          <root url="jar://C:/expr4j/expr4j-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

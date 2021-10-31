@@ -6,7 +6,7 @@ import in.pratanumandal.fractalstudio.common.Utils;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
-import in.pratanumandal.fractalstudio.expression.ComplexProcessor;
+import in.pratanumandal.fractalstudio.expression.ComplexParser;
 import in.pratanumandal.fractalstudio.fractals.Julia;
 import in.pratanumandal.fractalstudio.fractals.Mandelbrot;
 import in.pratanumandal.fractalstudio.fractals.NewtonRaphson;
@@ -47,13 +47,15 @@ import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.complex.Complex;
 import org.controlsfx.control.ToggleSwitch;
-import org.kobjects.expressionparser.ExpressionParser;
-import org.kobjects.expressionparser.ParsingException;
+import in.pratanumandal.expr4j.Expression;
+import in.pratanumandal.expr4j.exception.Expr4jException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -163,7 +165,10 @@ public class Controller {
             fractalName.setText("Newton Raphson");
             fractalFunction.setText(function);
 
-            fractal = new NewtonRaphson(canvas, function);
+            ComplexParser parser = new ComplexParser();
+            Expression<Complex> expression = parser.parse(function);
+
+            fractal = new NewtonRaphson(canvas, expression);
             this.updateFractal();
         }
     }
@@ -176,7 +181,10 @@ public class Controller {
             fractalName.setText("Julia");
             fractalFunction.setText(function);
 
-            fractal = new Julia(canvas, function);
+            ComplexParser parser = new ComplexParser();
+            Expression<Complex> expression = parser.parse(function);
+
+            fractal = new Julia(canvas, expression);
             this.updateFractal();
         }
     }
@@ -471,12 +479,15 @@ public class Controller {
             String function = textField.getText();
 
             try {
-                ComplexProcessor processor = new ComplexProcessor();
-                processor.variables.put("z", Complex.ZERO);
-                ExpressionParser<Complex> parser = processor.createParser();
-                parser.parse(function);
+                ComplexParser parser = new ComplexParser();
+                Expression<Complex> expression = parser.parse(function);
+
+                Map<String, Complex> variables = new HashMap<>();
+                variables.put("z", Complex.NaN);
+
+                expression.evaluate(variables);
             }
-            catch (ParsingException e) {
+            catch (Expr4jException e) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
                 alert.setHeaderText("Invalid function");
                 errorAlert.initOwner(canvas.getScene().getWindow());

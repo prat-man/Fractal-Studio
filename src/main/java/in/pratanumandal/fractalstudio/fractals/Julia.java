@@ -1,11 +1,14 @@
 package in.pratanumandal.fractalstudio.fractals;
 
 import in.pratanumandal.fractalstudio.core.Fractal;
-import in.pratanumandal.fractalstudio.expression.ComplexProcessor;
+import in.pratanumandal.fractalstudio.core.Point;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
-import org.kobjects.expressionparser.ExpressionParser;
+import in.pratanumandal.expr4j.Expression;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Julia extends Fractal {
 
@@ -60,26 +63,34 @@ public class Julia extends Fractal {
         }
     }
 
-    public final String function;
+    public final Expression<Complex> expression;
 
-    public Julia(Canvas canvas, String function) {
+    private Double[][] iterations;
+
+    public Julia(Canvas canvas, Expression<Complex> expression) {
         super(canvas);
-        this.function = function;
+        this.expression = expression;
+    }
+
+    @Override
+    public void run() {
+        this.iterations = new Double[(int) this.getCanvas().getWidth()][(int) this.getCanvas().getHeight()];
+
+        super.run();
     }
 
     private Complex function(Complex z) {
-        ComplexProcessor processor = new ComplexProcessor();
-        processor.variables.put("z", z);
+        Map<String, Complex> variables = new HashMap<>();
+        variables.put("z", z);
 
-        ExpressionParser<Complex> parser = processor.createParser();
-        return parser.parse(this.function);
+        return expression.evaluate(variables);
     }
 
     private Double julia(Complex z) {
         double iteration = 0;
         Complex last = null;
 
-        while (z.abs() < 2.0 && iteration < MAX_ITERATIONS) {
+        while (z.abs() <= 2.0 && iteration < MAX_ITERATIONS) {
             last = z;
             z = function(z);
             iteration++;
@@ -96,27 +107,30 @@ public class Julia extends Fractal {
     }
 
     @Override
-    public Color getColor(Complex z) {
-        Double iteration = this.julia(z);
-        if (iteration == null) return Color.BLACK;
+    public void compute(Point point, Complex z) {
+        this.iterations[(int) point.x][(int) point.y] = this.julia(z);
+    }
+
+    @Override
+    public Color getColor(Point point) {
+        Double iteration = this.iterations[(int) point.x][(int) point.y];
+
+        if (iteration == null) return null;
 
         if (this.isMonochrome()) {
             if (this.isInverted())
                 return Color.hsb(0.0, 0.0, Math.max(1.0 - iteration / MAX_ITERATIONS, 0.0));
-
             return Color.hsb(0.0, 0.0, Math.min(iteration / MAX_ITERATIONS, 1.0));
         }
 
         if (this.isInverted()) {
             if (this.isSmooth())
-                return SMOOTH_COLORS[Math.max(SMOOTH_COLORS.length - (int) (iteration * 10) - 1, 0)];
-
+                return SMOOTH_COLORS[Math.max(Math.min(SMOOTH_COLORS.length - (int) (iteration * 10) - 1, SMOOTH_COLORS.length - 1), 0)];
             return COLORS[COLORS.length - (int) (iteration % COLORS.length) - 1];
         }
 
         if (this.isSmooth())
-            return SMOOTH_COLORS[Math.min((int) (iteration * 10), SMOOTH_COLORS.length - 1)];
-
+            return SMOOTH_COLORS[Math.max(Math.min((int) (iteration * 10), SMOOTH_COLORS.length - 1), 0)];
         return COLORS[(int) (iteration % COLORS.length)];
     }
 

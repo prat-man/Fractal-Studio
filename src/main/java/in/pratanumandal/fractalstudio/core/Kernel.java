@@ -1,10 +1,5 @@
 package in.pratanumandal.fractalstudio.core;
 
-import javafx.application.Platform;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
 
 public class Kernel implements Runnable {
@@ -47,9 +42,6 @@ public class Kernel implements Runnable {
         double plotWidth = plotEnd.x - plotStart.x;
         double plotHeight = plotEnd.y - plotStart.y;
 
-        WritableImage image = new WritableImage((int) canvasWidth, (int) canvasHeight);
-        PixelWriter pw = image.getPixelWriter();
-
         for (double y = canvasStart.y; y < canvasEnd.y; y++) {
             for (double x = canvasStart.x; x < canvasEnd.x; x++) {
                 if (kill) return;
@@ -57,20 +49,11 @@ public class Kernel implements Runnable {
                 Complex z = new Complex(plotStart.x + ((x - canvasStart.x) / canvasWidth) * plotWidth,
                         plotStart.y + ((y - canvasStart.y) / canvasHeight) * plotHeight);
 
-                Color color = this.fractal.getColor(z);
-
-                if (color != null) {
-                    pw.setColor((int) (x - canvasStart.x), (int) (y - canvasStart.y), color);
-                }
+                this.fractal.compute(new Point(x, y), z);
 
                 processed++;
             }
         }
-
-        Platform.runLater(() -> {
-            GraphicsContext gc = this.fractal.getCanvas().getGraphicsContext2D();
-            gc.drawImage(image, canvasStart.x, canvasStart.y);
-        });
     }
     
 }

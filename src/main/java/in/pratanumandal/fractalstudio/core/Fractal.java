@@ -4,6 +4,9 @@ import in.pratanumandal.fractalstudio.common.Configuration;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
 
@@ -23,6 +26,8 @@ public abstract class Fractal implements Runnable {
     private boolean showOrigin;
     private boolean showCenter;
     private Point center;
+
+    private boolean indeterminate;
 
     public Fractal(Canvas canvas) {
         this.canvas = canvas;
@@ -100,6 +105,7 @@ public abstract class Fractal implements Runnable {
     public void run() {
         kill = false;
         kernels = new HashMap<>();
+        indeterminate = false;
 
         Platform.runLater(() -> {
             GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -141,6 +147,30 @@ public abstract class Fractal implements Runnable {
                 e.printStackTrace();
             }
         }
+
+        if (kill) return;
+
+        indeterminate = true;
+
+        WritableImage image = new WritableImage((int) canvasWidth, (int) canvasHeight);
+        PixelWriter pw = image.getPixelWriter();
+
+        for (double y = 0; y < canvasHeight; y++) {
+            for (double x = 0; x < canvasWidth; x++) {
+                if (kill) return;
+
+                Color color = this.getColor(new Point(x, y));
+
+                if (color != null) {
+                    pw.setColor((int) x, (int) y, color);
+                }
+            }
+        }
+
+        Platform.runLater(() -> {
+            GraphicsContext gc = this.canvas.getGraphicsContext2D();
+            gc.drawImage(image, 0, 0);
+        });
 
         if (kill) return;
 
@@ -192,6 +222,8 @@ public abstract class Fractal implements Runnable {
     }
 
     public double getProgress() {
+        if (indeterminate || kernels == null) return ProgressBar.INDETERMINATE_PROGRESS;
+
         long processed = 0;
         for (Kernel kernel : kernels.keySet()) {
             processed += kernel.getProcessed();
@@ -199,6 +231,8 @@ public abstract class Fractal implements Runnable {
         return processed / (canvas.getWidth() * canvas.getHeight());
     }
 
-    public abstract Color getColor(Complex z);
+    public abstract void compute(Point point, Complex z);
+
+    public abstract Color getColor(Point point);
 
 }

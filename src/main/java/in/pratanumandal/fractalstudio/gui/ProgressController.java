@@ -17,7 +17,17 @@ public class ProgressController {
     }
 
     public void setProgress(double progress) {
-        Platform.runLater(() -> this.progress.setProgress(progress));
+        Platform.runLater(() -> {
+            if (progress != this.progress.getProgress()) {
+                if (progress == ProgressBar.INDETERMINATE_PROGRESS) {
+                    this.progress.setVisible(false);
+                    this.progress.setProgress(progress);
+                    this.progress.setVisible(true);
+                } else {
+                    this.progress.setProgress(progress);
+                }
+            }
+        });
     }
 
 }

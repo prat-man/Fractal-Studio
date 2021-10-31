@@ -23,7 +23,7 @@ public class Configuration {
 
     public static void setCanvasSize(int canvasSize) {
         if (canvasSize < 200 || canvasSize > 5000) {
-            throw new IllegalArgumentException("Thread count must be between 200 and 1000");
+            throw new IllegalArgumentException("Canvas size must be between 200 and 5000");
         }
         CANVAS_SIZE = canvasSize;
     }

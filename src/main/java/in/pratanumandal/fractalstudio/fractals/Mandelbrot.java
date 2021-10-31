@@ -1,12 +1,13 @@
 package in.pratanumandal.fractalstudio.fractals;
 
 import in.pratanumandal.fractalstudio.core.Fractal;
+import in.pratanumandal.fractalstudio.core.Point;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
 
 public class Mandelbrot extends Fractal {
-    
+
     private static final double MAX_ITERATIONS = 100.0;
 
     private static final Color[] COLORS = {
@@ -58,8 +59,17 @@ public class Mandelbrot extends Fractal {
         }
     }
 
+    private Double[][] iterations;
+
     public Mandelbrot(Canvas canvas) {
         super(canvas);
+    }
+
+    @Override
+    public void run() {
+        this.iterations = new Double[(int) this.getCanvas().getWidth()][(int) this.getCanvas().getHeight()];
+
+        super.run();
     }
 
     private Double mandelbrot(Complex c) {
@@ -84,9 +94,15 @@ public class Mandelbrot extends Fractal {
     }
 
     @Override
-    public Color getColor(Complex c) {
-        Double iteration = this.mandelbrot(c);
-        if (iteration == null) return Color.BLACK;
+    public void compute(Point point, Complex z) {
+        this.iterations[(int) point.x][(int) point.y] = this.mandelbrot(z);
+    }
+
+    @Override
+    public Color getColor(Point point) {
+        Double iteration = this.iterations[(int) point.x][(int) point.y];
+
+        if (iteration == null) return null;
 
         if (this.isMonochrome()) {
             if (this.isInverted())

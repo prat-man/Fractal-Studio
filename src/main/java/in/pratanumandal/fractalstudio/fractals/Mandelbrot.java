@@ -8,8 +8,6 @@ import org.apache.commons.math3.complex.Complex;
 
 public class Mandelbrot extends Fractal {
 
-    private static final double MAX_ITERATIONS = 100.0;
-
     private static final Color[] COLORS = {
             Color.rgb(66, 30, 15),
             Color.rgb(25, 7, 26),
@@ -77,13 +75,13 @@ public class Mandelbrot extends Fractal {
         Complex last = null;
         Complex z = Complex.ZERO;
 
-        while (z.abs() <= 2.0 && iteration < MAX_ITERATIONS) {
+        while (z.abs() <= 2.0 && iteration < this.getIterationLimit()) {
             last = z;
             z = z.multiply(z).add(c);
             iteration++;
         }
 
-        if (z.equals(Complex.NaN) || iteration == MAX_ITERATIONS) return null;
+        if (z.equals(Complex.NaN) || iteration == this.getIterationLimit()) return null;
 
         if (last != null && this.isSmooth()) {
             double delta = 1 - Math.log(Math.log(z.abs())) / Math.log(2);
@@ -106,9 +104,9 @@ public class Mandelbrot extends Fractal {
 
         if (this.isMonochrome()) {
             if (this.isInverted())
-                return Color.hsb(0.0, 0.0, Math.max(1.0 - iteration / MAX_ITERATIONS, 0.0));
+                return Color.hsb(0.0, 0.0, Math.max(1.0 - iteration / this.getIterationLimit(), 0.0));
 
-            return Color.hsb(0.0, 0.0, Math.min(iteration / MAX_ITERATIONS, 1.0));
+            return Color.hsb(0.0, 0.0, Math.min(iteration / this.getIterationLimit(), 1.0));
         }
 
         if (this.isInverted()) {

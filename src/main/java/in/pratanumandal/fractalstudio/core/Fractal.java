@@ -20,12 +20,14 @@ public abstract class Fractal implements Runnable {
 
     private Canvas canvas;
     private double scale;
+    private double zoom;
     private boolean smooth;
     private boolean inverted;
     private boolean monochrome;
     private boolean showOrigin;
     private boolean showCenter;
     private Point center;
+    private double iterationLimit;
 
     private boolean indeterminate;
 
@@ -46,11 +48,15 @@ public abstract class Fractal implements Runnable {
     }
 
     public void setScale(double scale) {
-        if (scale <= 0) {
-            throw new IllegalArgumentException("Scale must be greater than zero");
-        }
-
         this.scale = scale;
+    }
+
+    public double getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
     }
 
     public boolean isSmooth() {
@@ -101,6 +107,14 @@ public abstract class Fractal implements Runnable {
         this.center = center;
     }
 
+    public double getIterationLimit() {
+        return iterationLimit;
+    }
+
+    public void setIterationLimit(double iterationLimit) {
+        this.iterationLimit = iterationLimit;
+    }
+
     @Override
     public void run() {
         kill = false;
@@ -120,6 +134,7 @@ public abstract class Fractal implements Runnable {
         int threadIndex = 0;
 
         int yIncr = (int) (canvasHeight / threadCount);
+        double factor = scale / zoom;
 
         for (double y = 0; y < canvasHeight; y += yIncr) {
             double yEnd = (++threadIndex == threadCount) ? canvasHeight : y + yIncr;
@@ -127,10 +142,10 @@ public abstract class Fractal implements Runnable {
             Kernel kernel = new Kernel(this,
                     new Point(0, y),
                     new Point(canvasWidth, y + yIncr),
-                    new Point(-1.0 * scale + (center == null ? 0.0 : center.x),
-                            ((y - canvasHeight / 2.0) / canvasHeight) * 2.0 * scale - (center == null ? 0.0 : center.y)),
-                    new Point(1.0 * scale + (center == null ? 0.0 : center.x),
-                            ((yEnd - canvasHeight / 2.0) / canvasHeight) * 2.0 * scale - (center == null ? 0.0 : center.y)));
+                    new Point(-1.0 * factor + (center == null ? 0.0 : center.x),
+                            ((y - canvasHeight / 2.0) / canvasHeight) * 2.0 * factor - (center == null ? 0.0 : center.y)),
+                    new Point(1.0 * factor + (center == null ? 0.0 : center.x),
+                            ((yEnd - canvasHeight / 2.0) / canvasHeight) * 2.0 * factor - (center == null ? 0.0 : center.y)));
 
             Thread thread = new Thread(kernel);
             thread.start();
@@ -176,8 +191,8 @@ public abstract class Fractal implements Runnable {
 
         if (showOrigin) {
             Platform.runLater(() -> {
-                double xCenter = Math.round(canvas.getWidth() * ((scale - (center == null ? 0.0 : center.x)) / (2.0 * scale))) + 0.5;
-                double yCenter = Math.round(canvas.getHeight() * ((scale + (center == null ? 0.0 : center.y)) / (2.0 * scale))) + 0.5;
+                double xCenter = Math.round(canvas.getWidth() * ((factor - (center == null ? 0.0 : center.x)) / (2.0 * factor))) + 0.5;
+                double yCenter = Math.round(canvas.getHeight() * ((factor + (center == null ? 0.0 : center.y)) / (2.0 * factor))) + 0.5;
 
                 GraphicsContext gc = canvas.getGraphicsContext2D();
                 gc.setStroke(Color.color(1.0, 1.0, 1.0, 0.7));

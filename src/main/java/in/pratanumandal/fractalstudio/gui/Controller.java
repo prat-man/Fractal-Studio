@@ -1,5 +1,7 @@
 package in.pratanumandal.fractalstudio.gui;
 
+import in.pratanumandal.expr4j.Expression;
+import in.pratanumandal.expr4j.exception.Expr4jException;
 import in.pratanumandal.fractalstudio.common.Configuration;
 import in.pratanumandal.fractalstudio.common.Constants;
 import in.pratanumandal.fractalstudio.common.Utils;
@@ -47,8 +49,6 @@ import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.complex.Complex;
 import org.controlsfx.control.ToggleSwitch;
-import in.pratanumandal.expr4j.Expression;
-import in.pratanumandal.expr4j.exception.Expr4jException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -84,6 +84,7 @@ public class Controller {
 
     @FXML private Spinner<Double> scale;
     @FXML private Spinner<Double> zoom;
+    @FXML private Spinner<Double> iterationLimit;
 
     @FXML private Label fractalName;
     @FXML private Label fractalFunction;
@@ -199,13 +200,15 @@ public class Controller {
         currentXCenter = Double.valueOf(centerX.getText());
         currentYCenter = Double.valueOf(centerY.getText());
 
-        fractal.setScale((scale.getValue() == null ? 2.0 : scale.getValue()) / (zoom.getValue() == null ? 1.0 : zoom.getValue()));
+        fractal.setScale(scale.getValue() == null ? 2.0 : scale.getValue());
+        fractal.setZoom(zoom.getValue() == null ? 1.0 : zoom.getValue());
         fractal.setSmooth(smooth.isSelected());
         fractal.setInverted(inverted.isSelected());
         fractal.setMonochrome(monochrome.isSelected());
         fractal.setShowOrigin(showOrigin.isSelected());
         fractal.setShowCenter(showCenter.isSelected());
         fractal.setCenter(new Point(currentXCenter, currentYCenter));
+        fractal.setIterationLimit(iterationLimit.getValue() == null ? 100.0 : iterationLimit.getValue());
 
         Thread thread = new Thread(fractal);
         this.progressDialog(fractal, thread);

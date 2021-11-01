@@ -1,12 +1,12 @@
 package in.pratanumandal.fractalstudio.fractals;
 
+import in.pratanumandal.expr4j.Expression;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
-import in.pratanumandal.expr4j.Expression;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class NewtonRaphson extends Fractal {
 
-    private static final double MAX_ITERATIONS = 100.0;
     private static final double EPSILON = Math.pow(10, -6);
 
     private static final Color[] COLORS = {
@@ -71,9 +70,9 @@ public class NewtonRaphson extends Fractal {
             z = z.subtract(h);
             iteration++;
         }
-        while (z.subtract(last).abs() > EPSILON && iteration <= MAX_ITERATIONS);
+        while (z.subtract(last).abs() > EPSILON && iteration <= this.getIterationLimit());
 
-        if (function(z).equals(Complex.NaN) || iteration > MAX_ITERATIONS) return null;
+        if (function(z).equals(Complex.NaN) || iteration > this.getIterationLimit()) return null;
 
         if (last != null && secondLast != null && this.isSmooth() && iteration != 1) {
             double prevR = Math.log10(last.subtract(secondLast).abs());

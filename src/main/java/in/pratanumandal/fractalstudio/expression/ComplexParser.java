@@ -1,9 +1,9 @@
 package in.pratanumandal.fractalstudio.expression;
 
-import org.apache.commons.math3.complex.Complex;
 import in.pratanumandal.expr4j.parser.ExpressionParser;
 import in.pratanumandal.expr4j.token.Operator;
 import in.pratanumandal.expr4j.token.Operator.OperatorType;
+import org.apache.commons.math3.complex.Complex;
 
 import java.util.Arrays;
 

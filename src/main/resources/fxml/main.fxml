@@ -100,13 +100,23 @@
                   </Spinner>
                </children>
             </HBox>
-            <Separator />
             <HBox alignment="CENTER_RIGHT" layoutX="20.0" layoutY="249.0" spacing="10.0">
                <children>
                   <Label text="Zoom" />
                   <Spinner fx:id="zoom" editable="true">
                      <valueFactory>
                         <SpinnerValueFactory.DoubleSpinnerValueFactory amountToStepBy="1.0" initialValue="1.0" max="10000000000.0" min="1.0" />
+                     </valueFactory>
+                  </Spinner>
+               </children>
+            </HBox>
+            <Separator />
+            <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="433.0" spacing="10.0">
+               <children>
+                  <Label text="Iterations" />
+                  <Spinner fx:id="iterationLimit" editable="true">
+                     <valueFactory>
+                        <SpinnerValueFactory.DoubleSpinnerValueFactory amountToStepBy="1.0" initialValue="100.0" max="100000.0" min="1.0" />
                      </valueFactory>
                   </Spinner>
                </children>

@@ -9,6 +9,7 @@ import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
 import in.pratanumandal.fractalstudio.expression.ComplexParser;
+import in.pratanumandal.fractalstudio.fractals.BurningShip;
 import in.pratanumandal.fractalstudio.fractals.Julia;
 import in.pratanumandal.fractalstudio.fractals.Mandelbrot;
 import in.pratanumandal.fractalstudio.fractals.NewtonRaphson;
@@ -150,15 +151,6 @@ public class Controller {
     }
 
     @FXML
-    private void mandelbrot() {
-        fractalName.setText("Mandelbrot");
-        fractalFunction.setText("");
-
-        fractal = new Mandelbrot(canvas);
-        this.updateFractal();
-    }
-
-    @FXML
     private void newtonRaphson() {
         String function = showFunctionDialog();
 
@@ -172,6 +164,24 @@ public class Controller {
             fractal = new NewtonRaphson(canvas, expression);
             this.updateFractal();
         }
+    }
+
+    @FXML
+    private void mandelbrot() {
+        fractalName.setText("Mandelbrot");
+        fractalFunction.setText("");
+
+        fractal = new Mandelbrot(canvas);
+        this.updateFractal();
+    }
+
+    @FXML
+    private void burningShip() {
+        fractalName.setText("Burning Ship");
+        fractalFunction.setText("");
+
+        fractal = new BurningShip(canvas);
+        this.updateFractal();
     }
 
     @FXML

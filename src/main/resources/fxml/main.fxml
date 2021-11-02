@@ -27,10 +27,10 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Plot">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#newtonRaphson" text="Newton Raphson"/>
                         <MenuItem mnemonicParsing="false" onAction="#mandelbrot" text="Mandelbrot"/>
                         <MenuItem mnemonicParsing="false" onAction="#burningShip" text="Burning Ship"/>
                         <MenuItem mnemonicParsing="false" onAction="#julia" text="Julia"/>
+                        <MenuItem mnemonicParsing="false" onAction="#newtonRaphson" text="Newton Raphson"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

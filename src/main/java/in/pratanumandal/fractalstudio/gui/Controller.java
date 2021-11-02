@@ -151,22 +151,6 @@ public class Controller {
     }
 
     @FXML
-    private void newtonRaphson() {
-        String function = showFunctionDialog();
-
-        if (function != null) {
-            fractalName.setText("Newton Raphson");
-            fractalFunction.setText(function);
-
-            ComplexParser parser = new ComplexParser();
-            Expression<Complex> expression = parser.parse(function);
-
-            fractal = new NewtonRaphson(canvas, expression);
-            this.updateFractal();
-        }
-    }
-
-    @FXML
     private void mandelbrot() {
         fractalName.setText("Mandelbrot");
         fractalFunction.setText("");
@@ -196,6 +180,22 @@ public class Controller {
             Expression<Complex> expression = parser.parse(function);
 
             fractal = new Julia(canvas, expression);
+            this.updateFractal();
+        }
+    }
+
+    @FXML
+    private void newtonRaphson() {
+        String function = showFunctionDialog();
+
+        if (function != null) {
+            fractalName.setText("Newton Raphson");
+            fractalFunction.setText(function);
+
+            ComplexParser parser = new ComplexParser();
+            Expression<Complex> expression = parser.parse(function);
+
+            fractal = new NewtonRaphson(canvas, expression);
             this.updateFractal();
         }
     }

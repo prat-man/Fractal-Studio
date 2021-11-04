@@ -31,15 +31,15 @@ public class NewtonRaphson extends Fractal {
     private AtomicReference<Double> minIterations;
     private AtomicReference<Double> maxIterations;
 
-    public NewtonRaphson(Canvas canvas, Expression<Complex> expression) {
-        super(canvas);
+    public NewtonRaphson(double size, Expression<Complex> expression) {
+        super(size);
         this.expression = expression;
     }
 
     @Override
     public void run() {
         this.colorMap = new HashMap<>();
-        this.roots = new Root[(int) this.getCanvas().getWidth()][(int) this.getCanvas().getHeight()];
+        this.roots = new Root[(int) this.getSize()][(int) this.getSize()];
 
         this.minIterations = new AtomicReference<>(Double.MAX_VALUE);
         this.maxIterations = new AtomicReference<>(0.0);

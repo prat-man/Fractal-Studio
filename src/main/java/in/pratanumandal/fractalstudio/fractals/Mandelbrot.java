@@ -59,13 +59,13 @@ public class Mandelbrot extends Fractal {
 
     private Double[][] iterations;
 
-    public Mandelbrot(Canvas canvas) {
-        super(canvas);
+    public Mandelbrot(double size) {
+        super(size);
     }
 
     @Override
     public void run() {
-        this.iterations = new Double[(int) this.getCanvas().getWidth()][(int) this.getCanvas().getHeight()];
+        this.iterations = new Double[(int) this.getSize()][(int) this.getSize()];
 
         super.run();
     }

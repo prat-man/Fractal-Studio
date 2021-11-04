@@ -65,14 +65,14 @@ public class Julia extends Fractal {
 
     private Double[][] iterations;
 
-    public Julia(Canvas canvas, Expression<Complex> expression) {
-        super(canvas);
+    public Julia(double size, Expression<Complex> expression) {
+        super(size);
         this.expression = expression;
     }
 
     @Override
     public void run() {
-        this.iterations = new Double[(int) this.getCanvas().getWidth()][(int) this.getCanvas().getHeight()];
+        this.iterations = new Double[(int) this.getSize()][(int) this.getSize()];
 
         super.run();
     }

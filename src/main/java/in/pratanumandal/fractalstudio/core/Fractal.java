@@ -18,29 +18,28 @@ public abstract class Fractal implements Runnable {
     private Map<Kernel, Thread> kernels;
     private boolean kill;
 
-    private Canvas canvas;
+    private double size;
     private double scale;
     private double zoom;
     private boolean smooth;
     private boolean inverted;
     private boolean monochrome;
-    private boolean showOrigin;
-    private boolean showCenter;
     private Point center;
     private double iterationLimit;
+    private WritableImage image;
 
     private boolean indeterminate;
 
-    public Fractal(Canvas canvas) {
-        this.canvas = canvas;
+    public Fractal(double size) {
+        this.size = size;
     }
 
-    public Canvas getCanvas() {
-        return canvas;
+    public double getSize() {
+        return size;
     }
 
-    public void setCanvas(Canvas canvas) {
-        this.canvas = canvas;
+    public void setSize(double size) {
+        this.size = size;
     }
 
     public double getScale() {
@@ -83,22 +82,6 @@ public abstract class Fractal implements Runnable {
         this.monochrome = monochrome;
     }
 
-    public boolean isShowOrigin() {
-        return showOrigin;
-    }
-
-    public void setShowOrigin(boolean showOrigin) {
-        this.showOrigin = showOrigin;
-    }
-
-    public boolean isShowCenter() {
-        return showCenter;
-    }
-
-    public void setShowCenter(boolean showCenter) {
-        this.showCenter = showCenter;
-    }
-
     public Point getCenter() {
         return center;
     }
@@ -115,20 +98,18 @@ public abstract class Fractal implements Runnable {
         this.iterationLimit = iterationLimit;
     }
 
+    public WritableImage getImage() {
+        return image;
+    }
+
     @Override
     public void run() {
         kill = false;
         kernels = new HashMap<>();
         indeterminate = false;
 
-        Platform.runLater(() -> {
-            GraphicsContext gc = canvas.getGraphicsContext2D();
-            gc.setFill(Color.BLACK);
-            gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        });
-
-        double canvasWidth = canvas.getWidth();
-        double canvasHeight = canvas.getHeight();
+        double canvasWidth = this.size;
+        double canvasHeight = this.size;
 
         int threadCount = Configuration.getThreadCount();
         int threadIndex = 0;
@@ -167,7 +148,7 @@ public abstract class Fractal implements Runnable {
 
         indeterminate = true;
 
-        WritableImage image = new WritableImage((int) canvasWidth, (int) canvasHeight);
+        image = new WritableImage((int) canvasWidth, (int) canvasHeight);
         PixelWriter pw = image.getPixelWriter();
 
         for (double y = 0; y < canvasHeight; y++) {
@@ -180,38 +161,6 @@ public abstract class Fractal implements Runnable {
                     pw.setColor((int) x, (int) y, color);
                 }
             }
-        }
-
-        Platform.runLater(() -> {
-            GraphicsContext gc = this.canvas.getGraphicsContext2D();
-            gc.drawImage(image, 0, 0);
-        });
-
-        if (kill) return;
-
-        if (showOrigin) {
-            Platform.runLater(() -> {
-                double xCenter = Math.round(canvas.getWidth() * ((factor - (center == null ? 0.0 : center.x)) / (2.0 * factor))) + 0.5;
-                double yCenter = Math.round(canvas.getHeight() * ((factor + (center == null ? 0.0 : center.y)) / (2.0 * factor))) + 0.5;
-
-                GraphicsContext gc = canvas.getGraphicsContext2D();
-                gc.setStroke(Color.color(1.0, 1.0, 1.0, 0.7));
-                gc.setLineWidth(1.0);
-                gc.setLineDashes(0);
-                gc.strokeLine(xCenter, 0, xCenter, canvas.getHeight());
-                gc.strokeLine(0, yCenter, canvas.getWidth(), yCenter);
-            });
-        }
-
-        if (showCenter) {
-            Platform.runLater(() -> {
-                GraphicsContext gc = canvas.getGraphicsContext2D();
-                gc.setStroke(Color.color(1.0, 1.0, 1.0, 0.7));
-                gc.setLineWidth(1.0);
-                gc.setLineDashes(2, 4);
-                gc.strokeLine(canvas.getWidth() / 2 + 0.5, 0, canvas.getWidth() / 2 + 0.5, canvas.getHeight());
-                gc.strokeLine(0, canvas.getHeight() / 2 + 0.5, canvas.getWidth(), canvas.getHeight() / 2 + 0.5);
-            });
         }
     }
 
@@ -243,7 +192,7 @@ public abstract class Fractal implements Runnable {
         for (Kernel kernel : kernels.keySet()) {
             processed += kernel.getProcessed();
         }
-        return processed / (canvas.getWidth() * canvas.getHeight());
+        return processed / (this.size * this.size);
     }
 
     public abstract void compute(Point point, Complex z);

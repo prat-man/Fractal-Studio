@@ -91,6 +91,7 @@ public class Controller {
     @FXML private Label fractalFunction;
 
     private Fractal fractal;
+    private WritableImage image;
 
     private double currentXCenter;
     private double currentYCenter;
@@ -143,6 +144,9 @@ public class Controller {
             dragged.set(false);
         });
 
+        showOrigin.selectedProperty().addListener((observable, oldValue, newValue) -> this.updatePlot());
+        showCenter.selectedProperty().addListener((observable, oldValue, newValue) -> this.updatePlot());
+
         Platform.runLater(() -> {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.setFill(Color.BLACK);
@@ -155,7 +159,7 @@ public class Controller {
         fractalName.setText("Mandelbrot");
         fractalFunction.setText("");
 
-        fractal = new Mandelbrot(canvas);
+        fractal = new Mandelbrot(Configuration.getCanvasSize());
         this.updateFractal();
     }
 
@@ -164,7 +168,7 @@ public class Controller {
         fractalName.setText("Burning Ship");
         fractalFunction.setText("");
 
-        fractal = new BurningShip(canvas);
+        fractal = new BurningShip(Configuration.getCanvasSize());
         this.updateFractal();
     }
 
@@ -174,12 +178,12 @@ public class Controller {
 
         if (function != null) {
             fractalName.setText("Julia");
-            fractalFunction.setText(function);
 
             ComplexParser parser = new ComplexParser();
             Expression<Complex> expression = parser.parse(function);
+            fractalFunction.setText(expression.toString());
 
-            fractal = new Julia(canvas, expression);
+            fractal = new Julia(Configuration.getCanvasSize(), expression);
             this.updateFractal();
         }
     }
@@ -190,12 +194,12 @@ public class Controller {
 
         if (function != null) {
             fractalName.setText("Newton Raphson");
-            fractalFunction.setText(function);
 
             ComplexParser parser = new ComplexParser();
             Expression<Complex> expression = parser.parse(function);
+            fractalFunction.setText(expression.toString());
 
-            fractal = new NewtonRaphson(canvas, expression);
+            fractal = new NewtonRaphson(Configuration.getCanvasSize(), expression);
             this.updateFractal();
         }
     }
@@ -204,8 +208,16 @@ public class Controller {
     private void updateFractal() {
         update.setDisable(false);
 
+        fractal.setSize(Configuration.getCanvasSize());
+
         canvas.setWidth(Configuration.getCanvasSize());
         canvas.setHeight(Configuration.getCanvasSize());
+
+        Platform.runLater(() -> {
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        });
 
         currentXCenter = Double.valueOf(centerX.getText());
         currentYCenter = Double.valueOf(centerY.getText());
@@ -215,14 +227,31 @@ public class Controller {
         fractal.setSmooth(smooth.isSelected());
         fractal.setInverted(inverted.isSelected());
         fractal.setMonochrome(monochrome.isSelected());
-        fractal.setShowOrigin(showOrigin.isSelected());
-        fractal.setShowCenter(showCenter.isSelected());
         fractal.setCenter(new Point(currentXCenter, currentYCenter));
         fractal.setIterationLimit(iterationLimit.getValue() == null ? 100.0 : iterationLimit.getValue());
 
+        AtomicReference<Alert> alertReference = this.progressDialog(fractal);
+
         Thread thread = new Thread(fractal);
-        this.progressDialog(fractal, thread);
         thread.start();
+
+        Thread fractalThread = new Thread(() -> {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (alertReference.get() != null) {
+                Platform.runLater(() -> alertReference.get().close());
+            }
+
+            if (!fractal.isInterrupted()) {
+                this.image = fractal.getImage();
+                this.updatePlot();
+            }
+        });
+        fractalThread.start();
     }
 
     @FXML
@@ -402,7 +431,7 @@ public class Controller {
         window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
-    private void progressDialog(Fractal fractal, Thread thread) {
+    private AtomicReference<Alert> progressDialog(Fractal fractal) {
         AtomicReference<Alert> alertReference = new AtomicReference<>(null);
 
         Platform.runLater(() -> {
@@ -448,19 +477,7 @@ public class Controller {
             service.shutdown();
         });
 
-        Thread fractalThread = new Thread(() -> {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (alertReference.get() != null) {
-                Platform.runLater(() -> alertReference.get().close());
-            }
-        });
-
-        fractalThread.start();
+        return alertReference;
     }
 
     private String showFunctionDialog() {
@@ -516,6 +533,48 @@ public class Controller {
         }
 
         return null;
+    }
+
+    private void updatePlot() {
+        boolean showOrigin = this.showOrigin.isSelected();
+        boolean showCenter = this.showCenter.isSelected();
+        Point center = new Point(currentXCenter, currentYCenter);
+        double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / (zoom.getValue() == null ? 1.0 : zoom.getValue());
+
+        canvas.setWidth(Configuration.getCanvasSize());
+        canvas.setHeight(Configuration.getCanvasSize());
+
+        Platform.runLater(() -> {
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            gc.drawImage(image, 0, 0);
+        });
+
+        if (showOrigin) {
+            Platform.runLater(() -> {
+                double xCenter = Math.round(canvas.getWidth() * ((factor - (center == null ? 0.0 : center.x)) / (2.0 * factor))) + 0.5;
+                double yCenter = Math.round(canvas.getHeight() * ((factor + (center == null ? 0.0 : center.y)) / (2.0 * factor))) + 0.5;
+
+                GraphicsContext gc = canvas.getGraphicsContext2D();
+                gc.setStroke(Color.color(1.0, 1.0, 1.0, 0.7));
+                gc.setLineWidth(1.0);
+                gc.setLineDashes(0);
+                gc.strokeLine(xCenter, 0, xCenter, canvas.getHeight());
+                gc.strokeLine(0, yCenter, canvas.getWidth(), yCenter);
+            });
+        }
+
+        if (showCenter) {
+            Platform.runLater(() -> {
+                GraphicsContext gc = canvas.getGraphicsContext2D();
+                gc.setStroke(Color.color(1.0, 1.0, 1.0, 0.7));
+                gc.setLineWidth(1.0);
+                gc.setLineDashes(2, 4);
+                gc.strokeLine(canvas.getWidth() / 2 + 0.5, 0, canvas.getWidth() / 2 + 0.5, canvas.getHeight());
+                gc.strokeLine(0, canvas.getHeight() / 2 + 0.5, canvas.getWidth(), canvas.getHeight() / 2 + 0.5);
+            });
+        }
     }
 
 }

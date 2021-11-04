@@ -59,13 +59,13 @@ public class BurningShip extends Fractal {
 
     private Double[][] iterations;
 
-    public BurningShip(Canvas canvas) {
-        super(canvas);
+    public BurningShip(double size) {
+        super(size);
     }
 
     @Override
     public void run() {
-        this.iterations = new Double[(int) this.getCanvas().getWidth()][(int) this.getCanvas().getHeight()];
+        this.iterations = new Double[(int) this.getSize()][(int) this.getSize()];
 
         super.run();
     }

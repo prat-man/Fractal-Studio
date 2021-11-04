@@ -48,8 +48,24 @@ public class ComplexParser extends ExpressionParser<Complex> {
     }
 
     @Override
-    protected Complex parseNumber(String s) {
+    protected Complex stringToOperand(String s) {
         return new Complex(Double.parseDouble(s), 0);
+    }
+
+    @Override
+    protected String operandToString(Complex complex) {
+        StringBuilder representation = new StringBuilder();
+        double real = complex.getReal();
+        double imaginary = complex.getImaginary();
+        if (real != 0.0) {
+            if (real == (int) real) representation.append((int) real);
+            else representation.append(real);
+        }
+        if (imaginary != 0.0) {
+            if (imaginary == (int) imaginary) representation.append((int) imaginary);
+            else representation.append(imaginary);
+        }
+        return representation.toString();
     }
 
 }

@@ -4,7 +4,6 @@ import in.pratanumandal.expr4j.Expression;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.FractalUtils;
 import in.pratanumandal.fractalstudio.core.Point;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
 
@@ -40,11 +39,16 @@ public class NewtonRaphson extends Fractal {
     public void run() {
         this.colorMap = new HashMap<>();
         this.roots = new Root[(int) this.getSize()][(int) this.getSize()];
-
         this.minIterations = new AtomicReference<>(Double.MAX_VALUE);
         this.maxIterations = new AtomicReference<>(0.0);
 
         super.run();
+
+        this.colorMap = null;
+        this.roots = null;
+        this.minIterations = null;
+        this.maxIterations = null;
+        System.gc();
     }
 
     private Complex function(Complex z) {

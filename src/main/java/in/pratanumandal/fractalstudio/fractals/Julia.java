@@ -3,7 +3,6 @@ package in.pratanumandal.fractalstudio.fractals;
 import in.pratanumandal.expr4j.Expression;
 import in.pratanumandal.fractalstudio.core.Fractal;
 import in.pratanumandal.fractalstudio.core.Point;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
 
@@ -75,6 +74,9 @@ public class Julia extends Fractal {
         this.iterations = new Double[(int) this.getSize()][(int) this.getSize()];
 
         super.run();
+
+        this.iterations = null;
+        System.gc();
     }
 
     private Complex function(Complex z) {

@@ -47,15 +47,21 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import javafx.util.Pair;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.complex.Complex;
 import org.controlsfx.control.ToggleSwitch;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.imageio.event.IIOWriteProgressListener;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -230,7 +236,16 @@ public class Controller {
         fractal.setCenter(new Point(currentXCenter, currentYCenter));
         fractal.setIterationLimit(iterationLimit.getValue() == null ? 100.0 : iterationLimit.getValue());
 
-        AtomicReference<Alert> alertReference = this.progressDialog(fractal);
+        Progress progress = this.progressDialog("Generating fractal", fractal::interrupt);
+
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture future = service.scheduleAtFixedRate(
+                () -> {
+                    if (progress.getController() != null) {
+                        progress.getController().setProgress(fractal.getProgress());
+                    }
+                },
+                0, 100, TimeUnit.MILLISECONDS);
 
         Thread thread = new Thread(fractal);
         thread.start();
@@ -242,8 +257,11 @@ public class Controller {
                 e.printStackTrace();
             }
 
-            if (alertReference.get() != null) {
-                Platform.runLater(() -> alertReference.get().close());
+            future.cancel(true);
+            service.shutdown();
+
+            if (progress.getAlert() != null) {
+                Platform.runLater(() -> progress.getAlert().close());
             }
 
             if (!fractal.isInterrupted()) {
@@ -276,32 +294,83 @@ public class Controller {
             WritableImage image = new WritableImage(width, height);
             image = canvas.snapshot(null, image);
 
-            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            bufferedImage = SwingFXUtils.fromFXImage(image, bufferedImage);
+            WritableImage finalImage = image;
+            Thread thread = new Thread(() -> {
+                String suffix = FilenameUtils.getExtension(file.getName());
+                ImageWriter writer = ImageIO.getImageWritersBySuffix(suffix).next();
 
-            try {
-                ImageIO.write(bufferedImage, FilenameUtils.getExtension(file.getName()), file);
+                Progress progress = this.progressDialog("Exporting image", writer::abort);
 
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(Constants.APPLICATION_NAME);
-                    alert.setHeaderText("Save");
-                    alert.setContentText("Fractal has been saved to file: " + file.getAbsolutePath());
-                    alert.initOwner(canvas.getScene().getWindow());
-                    alert.showAndWait();
+                BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                bufferedImage = SwingFXUtils.fromFXImage(finalImage, bufferedImage);
+
+                AtomicBoolean aborted = new AtomicBoolean(false);
+
+                writer.addIIOWriteProgressListener(new IIOWriteProgressListener() {
+                    @Override
+                    public void imageStarted(ImageWriter source, int imageIndex) { }
+
+                    @Override
+                    public void imageProgress(ImageWriter source, float percentageDone) {
+                        if (progress.getController() != null) {
+                            progress.getController().setProgress(percentageDone / 100.0);
+                        }
+                    }
+
+                    @Override
+                    public void imageComplete(ImageWriter source) {
+                        if (progress.getAlert() != null) {
+                            Platform.runLater(() -> progress.getAlert().close());
+                        }
+
+                        try {
+                            Desktop.getDesktop().open(file);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void thumbnailStarted(ImageWriter source, int imageIndex, int thumbnailIndex) { }
+
+                    @Override
+                    public void thumbnailProgress(ImageWriter source, float percentageDone) { }
+
+                    @Override
+                    public void thumbnailComplete(ImageWriter source) { }
+
+                    @Override
+                    public void writeAborted(ImageWriter source) {
+                        aborted.set(true);
+                    }
                 });
-            } catch (IOException e) {
-                e.printStackTrace();
 
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle(Constants.APPLICATION_NAME);
-                    alert.setHeaderText("Error");
-                    alert.setContentText("Failed to save fractal to file: " + file.getAbsolutePath());
-                    alert.initOwner(canvas.getScene().getWindow());
-                    alert.showAndWait();
-                });
-            }
+                try (ImageOutputStream stream = ImageIO.createImageOutputStream(file)) {
+                    writer.setOutput(stream);
+                    writer.write(bufferedImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                    if (progress.getAlert() != null) {
+                        Platform.runLater(() -> progress.getAlert().close());
+                    }
+
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle(Constants.APPLICATION_NAME);
+                        alert.setHeaderText("Error");
+                        alert.setContentText("Failed to save fractal to file: " + file.getAbsolutePath());
+                        alert.initOwner(canvas.getScene().getWindow());
+                        alert.showAndWait();
+                    });
+                } finally {
+                    if (aborted.get()) {
+                        file.delete();
+                    }
+                }
+            });
+
+            thread.start();
         }
     }
 
@@ -431,15 +500,16 @@ public class Controller {
         window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
-    private AtomicReference<Alert> progressDialog(Fractal fractal) {
+    private Progress progressDialog(String header, Function function) {
         AtomicReference<Alert> alertReference = new AtomicReference<>(null);
+        AtomicReference<ProgressController> controllerReference = new AtomicReference<>(null);
 
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alertReference.set(alert);
 
             alert.setTitle(Constants.APPLICATION_NAME);
-            alert.setHeaderText("Generating fractal");
+            alert.setHeaderText(header);
 
             ButtonType abort = new ButtonType("Abort", ButtonBar.ButtonData.OTHER);
             alert.getButtonTypes().clear();
@@ -455,12 +525,7 @@ public class Controller {
                 return;
             }
 
-            ProgressController controller = loader.getController();
-
-            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-            ScheduledFuture future = service.scheduleAtFixedRate(
-                    () -> controller.setProgress(fractal.getProgress()),
-                    0, 100, TimeUnit.MILLISECONDS);
+            controllerReference.set(loader.getController());
 
             alert.getDialogPane().getScene().getWindow().setOnCloseRequest(event -> event.consume());
 
@@ -470,14 +535,11 @@ public class Controller {
             Optional<ButtonType> result = alert.showAndWait();
 
             if (result.isPresent() && result.get() == abort) {
-                fractal.interrupt();
+                function.execute();
             }
-
-            future.cancel(true);
-            service.shutdown();
         });
 
-        return alertReference;
+        return new Progress(alertReference, controllerReference);
     }
 
     private String showFunctionDialog() {
@@ -575,6 +637,29 @@ public class Controller {
                 gc.strokeLine(0, canvas.getHeight() / 2 + 0.5, canvas.getWidth(), canvas.getHeight() / 2 + 0.5);
             });
         }
+    }
+
+    private class Progress {
+        private AtomicReference<Alert> alert;
+        private AtomicReference<ProgressController> controller;
+
+        public Progress(AtomicReference<Alert> alert, AtomicReference<ProgressController> controller) {
+            this.alert = alert;
+            this.controller = controller;
+        }
+
+        public Alert getAlert() {
+            return alert.get();
+        }
+
+        public ProgressController getController() {
+            return controller.get();
+        }
+    }
+
+    @FunctionalInterface
+    private interface Function {
+        void execute();
     }
 
 }

@@ -2,6 +2,7 @@ package in.pratanumandal.fractalstudio.gui;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.VBox;
 
@@ -11,9 +12,15 @@ public class ProgressController {
 
     @FXML private VBox progressContainer;
 
+    @FXML private Label message;
+
     @FXML
     private void initialize() {
         progress.prefWidthProperty().bind(progressContainer.widthProperty());
+    }
+
+    public void setMessage(String message) {
+        this.message.setText(message);
     }
 
     public void setProgress(double progress) {

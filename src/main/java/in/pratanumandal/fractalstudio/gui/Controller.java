@@ -47,7 +47,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import javafx.util.Pair;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.complex.Complex;
 import org.controlsfx.control.ToggleSwitch;
@@ -61,7 +60,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -236,7 +234,7 @@ public class Controller {
         fractal.setCenter(new Point(currentXCenter, currentYCenter));
         fractal.setIterationLimit(iterationLimit.getValue() == null ? 100.0 : iterationLimit.getValue());
 
-        Progress progress = this.progressDialog("Generating fractal", fractal::interrupt);
+        Progress progress = this.showProgressDialog("Generating fractal", "Please wait. The fractal is being generated.", fractal::interrupt);
 
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         ScheduledFuture future = service.scheduleAtFixedRate(
@@ -299,7 +297,7 @@ public class Controller {
                 String suffix = FilenameUtils.getExtension(file.getName());
                 ImageWriter writer = ImageIO.getImageWritersBySuffix(suffix).next();
 
-                Progress progress = this.progressDialog("Exporting image", writer::abort);
+                Progress progress = this.showProgressDialog("Exporting image", "Please wait. The image is being saved to file.", writer::abort);
 
                 BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
                 bufferedImage = SwingFXUtils.fromFXImage(finalImage, bufferedImage);
@@ -500,7 +498,7 @@ public class Controller {
         window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
-    private Progress progressDialog(String header, Function function) {
+    private Progress showProgressDialog(String header, String message, Function function) {
         AtomicReference<Alert> alertReference = new AtomicReference<>(null);
         AtomicReference<ProgressController> controllerReference = new AtomicReference<>(null);
 
@@ -525,7 +523,10 @@ public class Controller {
                 return;
             }
 
-            controllerReference.set(loader.getController());
+            ProgressController controller = loader.getController();
+            controllerReference.set(controller);
+
+            controller.setMessage(message);
 
             alert.getDialogPane().getScene().getWindow().setOnCloseRequest(event -> event.consume());
 

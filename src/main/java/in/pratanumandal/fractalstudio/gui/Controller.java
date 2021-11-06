@@ -59,7 +59,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -136,10 +139,15 @@ public class Controller {
         canvas.setOnMouseReleased(event -> {
             if (pickCenter.isSelected() && !dragged.get()) {
                 double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / (zoom.getValue() == null ? 1.0 : zoom.getValue());
+
                 double xCenter = FractalUtils.precision(((event.getX() / canvas.getWidth()) - 0.5) * 2.0 * factor + currentXCenter, 11);
                 double yCenter = FractalUtils.precision((0.5 - (event.getY() / canvas.getHeight())) * 2.0 * factor + currentYCenter, 11);
-                centerX.setText(String.valueOf(xCenter));
-                centerY.setText(String.valueOf(yCenter));
+
+                DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+                df.setMaximumFractionDigits(11);
+                centerX.setText(df.format(xCenter));
+                centerY.setText(df.format(yCenter));
+
                 pickCenter.setSelected(false);
             }
 

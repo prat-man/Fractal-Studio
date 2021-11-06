@@ -413,6 +413,7 @@ public class Controller {
         if (result.isPresent() && result.get() == apply) {
             Configuration.setCanvasSize(controller.getCanvasSize());
             Configuration.setThreadCount(controller.getThreadCount());
+            Configuration.setMode(controller.getMode());
         }
     }
 

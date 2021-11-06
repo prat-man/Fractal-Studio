@@ -1,5 +1,7 @@
 package in.pratanumandal.fractalstudio.core;
 
+import in.pratanumandal.fractalstudio.common.Configuration;
+import in.pratanumandal.fractalstudio.common.Mode;
 import org.apache.commons.math3.complex.Complex;
 
 public class Kernel implements Runnable {
@@ -52,6 +54,15 @@ public class Kernel implements Runnable {
                 this.fractal.compute(new Point(x, y), z);
 
                 processed++;
+
+                if ((Configuration.getMode() == Mode.BALANCED && processed % 5000 == 0) ||
+                        (Configuration.getMode() == Mode.POWER_SAVING && processed % 1000 == 0)) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }

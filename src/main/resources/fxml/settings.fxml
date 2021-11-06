@@ -1,39 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="in.pratanumandal.fractalstudio.gui.SettingsController">
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="in.pratanumandal.fractalstudio.gui.SettingsController">
 
     <children>
-        <VBox fx:id="progressContainer" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox fx:id="progressContainer" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER_RIGHT" layoutX="20.0" layoutY="408.0" spacing="10.0">
                     <children>
-                        <Label text="Canvas size"/>
+                        <Label text="Canvas size" />
                         <Spinner fx:id="canvasSize" editable="true">
                             <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="100" initialValue="500"
-                                                                                max="5000" min="200"/>
+                                <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="100" initialValue="500" max="5000" min="200" />
                             </valueFactory>
                         </Spinner>
                     </children>
                 </HBox>
                 <HBox alignment="CENTER_RIGHT" layoutX="20.0" layoutY="466.0" spacing="10.0">
                     <children>
-                        <Label text="Thread count"/>
+                        <Label text="Thread count" />
                         <Spinner fx:id="threadCount" editable="true">
                             <valueFactory>
-                                <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="4"
-                                                                                max="64" min="1"/>
+                                <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="4" max="64" min="1" />
                             </valueFactory>
                         </Spinner>
                     </children>
                 </HBox>
+            <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="45.0" spacing="10.0">
+               <children>
+                  <Label text="Mode" />
+                  <ChoiceBox fx:id="mode" prefWidth="149.0">
+                      <items>
+                          <FXCollections fx:factory="observableArrayList">
+                              <String fx:value="Performance" />
+                              <String fx:value="Balanced" />
+                              <String fx:value="Power Saving" />
+                          </FXCollections>
+                      </items>
+                  </ChoiceBox>
+               </children>
+            </HBox>
             </children>
         </VBox>
     </children>

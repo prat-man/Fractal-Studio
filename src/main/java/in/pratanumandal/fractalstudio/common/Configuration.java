@@ -28,4 +28,14 @@ public class Configuration {
         CANVAS_SIZE = canvasSize;
     }
 
+    private static Mode MODE = Mode.BALANCED;
+
+    public static Mode getMode() {
+        return MODE;
+    }
+
+    public static void setMode(Mode mode) {
+        MODE = mode;
+    }
+
 }

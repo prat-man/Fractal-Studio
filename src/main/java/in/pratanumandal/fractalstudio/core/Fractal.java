@@ -114,12 +114,15 @@ public abstract class Fractal implements Runnable {
         int yIncr = (int) (canvasHeight / threadCount);
         double factor = scale / zoom;
 
-        for (double y = 0; y < canvasHeight; y += yIncr) {
-            double yEnd = (++threadIndex == threadCount) ? canvasHeight : y + yIncr;
+        double x, y;
+
+        y = 0;
+        while (y < canvasHeight - 1) {
+            double yEnd = (++threadIndex == threadCount) ? canvasHeight - 1 : y + yIncr;
 
             Kernel kernel = new Kernel(this,
                     new Point(0, y),
-                    new Point(canvasWidth, y + yIncr),
+                    new Point(canvasWidth, yEnd),
                     new Point(-1.0 * factor + (center == null ? 0.0 : center.x),
                             ((y - canvasHeight / 2.0) / canvasHeight) * 2.0 * factor - (center == null ? 0.0 : center.y)),
                     new Point(1.0 * factor + (center == null ? 0.0 : center.x),
@@ -129,6 +132,8 @@ public abstract class Fractal implements Runnable {
             thread.start();
 
             kernels.put(kernel, thread);
+
+            y = yEnd;
         }
 
         if (kill) return;
@@ -148,8 +153,8 @@ public abstract class Fractal implements Runnable {
         image = new WritableImage((int) canvasWidth, (int) canvasHeight);
         PixelWriter pw = image.getPixelWriter();
 
-        for (double y = 0; y < canvasHeight; y++) {
-            for (double x = 0; x < canvasWidth; x++) {
+        for (y = 0; y < canvasHeight; y++) {
+            for (x = 0; x < canvasWidth; x++) {
                 if (kill) return;
 
                 Color color = this.getColor(new Point(x, y));

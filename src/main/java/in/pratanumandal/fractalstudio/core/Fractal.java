@@ -117,8 +117,8 @@ public abstract class Fractal implements Runnable {
         double x, y;
 
         y = 0;
-        while (y < canvasHeight - 1) {
-            double yEnd = (++threadIndex == threadCount) ? canvasHeight - 1 : y + yIncr;
+        while (y < canvasHeight) {
+            double yEnd = (++threadIndex == threadCount) ? canvasHeight : y + yIncr;
 
             Kernel kernel = new Kernel(this,
                     new Point(0, y),

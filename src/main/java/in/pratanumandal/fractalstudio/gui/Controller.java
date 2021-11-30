@@ -32,6 +32,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -55,6 +56,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.event.IIOWriteProgressListener;
 import javax.imageio.stream.ImageOutputStream;
+import javax.xml.bind.JAXBException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -96,6 +98,8 @@ public class Controller {
 
     @FXML private Label fractalName;
     @FXML private Label fractalFunction;
+
+    @FXML private MenuItem save;
 
     private Fractal fractal;
     private WritableImage image;
@@ -159,6 +163,9 @@ public class Controller {
         showOrigin.selectedProperty().addListener((observable, oldValue, newValue) -> this.updatePlot());
         showCenter.selectedProperty().addListener((observable, oldValue, newValue) -> this.updatePlot());
 
+        canvas.setWidth(Configuration.getCanvasSize());
+        canvas.setHeight(Configuration.getCanvasSize());
+
         Platform.runLater(() -> {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.setFill(Color.BLACK);
@@ -186,13 +193,10 @@ public class Controller {
 
     @FXML
     private void julia() {
-        String function = showFunctionDialog();
+        Expression<Complex> expression = showFunctionDialog();
 
-        if (function != null) {
+        if (expression != null) {
             fractalName.setText("Julia");
-
-            ComplexParser parser = new ComplexParser();
-            Expression<Complex> expression = parser.parse(function);
             fractalFunction.setText(expression.toString());
 
             fractal = new Julia(Configuration.getCanvasSize(), expression);
@@ -202,13 +206,10 @@ public class Controller {
 
     @FXML
     private void newtonRaphson() {
-        String function = showFunctionDialog();
+        Expression<Complex> expression = showFunctionDialog();
 
-        if (function != null) {
+        if (expression != null) {
             fractalName.setText("Newton Raphson");
-
-            ComplexParser parser = new ComplexParser();
-            Expression<Complex> expression = parser.parse(function);
             fractalFunction.setText(expression.toString());
 
             fractal = new NewtonRaphson(Configuration.getCanvasSize(), expression);
@@ -274,6 +275,10 @@ public class Controller {
                 this.image = fractal.getImage();
                 this.updatePlot();
             }
+
+            if (save.isDisable()) {
+                save.setDisable(false);
+            }
         });
         fractalThread.start();
     }
@@ -285,15 +290,153 @@ public class Controller {
     }
 
     @FXML
-    private void export() {
+    private void open() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fractal Studio", "*.fsx"));
+        fileChooser.setInitialDirectory(Configuration.getDirectory());
+
+        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
+
+        if (file != null) {
+            Configuration.setDirectory(file.getParentFile());
+
+            try {
+                this.fractal = Utils.loadFractal(file);
+            } catch (JAXBException e) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(Constants.APPLICATION_NAME);
+                    alert.setHeaderText("Error");
+                    alert.setContentText("Failed to open fractal from file: " + file.getAbsolutePath());
+                    alert.initOwner(canvas.getScene().getWindow());
+                    alert.showAndWait();
+                });
+
+                return;
+            }
+
+            if (fractal instanceof Mandelbrot) {
+                fractalName.setText("Mandelbrot");
+                fractalFunction.setText("");
+            }
+            else if (fractal instanceof BurningShip) {
+                fractalName.setText("Burning Ship");
+                fractalFunction.setText("");
+            }
+            else if (fractal instanceof Julia) {
+                try {
+                    Julia julia = (Julia) fractal;
+
+                    Expression<Complex> expression = julia.expression;
+                    Map<String, Complex> variables = new HashMap<>();
+                    variables.put("z", Complex.NaN);
+                    expression.evaluate(variables);
+
+                    fractalName.setText("Julia");
+                    fractalFunction.setText(expression.toString());
+                }
+                catch (Expr4jException e) {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
+                    errorAlert.initOwner(canvas.getScene().getWindow());
+                    errorAlert.showAndWait();
+
+                    return;
+                }
+                catch (Exception e) {
+                    // Do nothing
+                }
+            }
+            else if (fractal instanceof NewtonRaphson) {
+                try {
+                    NewtonRaphson newtonRaphson = (NewtonRaphson) fractal;
+
+                    Expression<Complex> expression = newtonRaphson.expression;
+                    Map<String, Complex> variables = new HashMap<>();
+                    variables.put("z", Complex.NaN);
+                    expression.evaluate(variables);
+
+                    fractalName.setText("Newton Raphson");
+                    fractalFunction.setText(expression.toString());
+                }
+                catch (Expr4jException e) {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
+                    errorAlert.initOwner(canvas.getScene().getWindow());
+                    errorAlert.showAndWait();
+
+                    return;
+                }
+                catch (Exception e) {
+                    // Do nothing
+                }
+            }
+
+            Point center = fractal.getCenter();
+            DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            df.setMaximumFractionDigits(11);
+            centerX.setText(df.format(center.x));
+            centerY.setText(df.format(center.y));
+
+            scale.getValueFactory().setValue(fractal.getScale());
+            zoom.getValueFactory().setValue(fractal.getZoom());
+            smooth.setSelected(fractal.isSmooth());
+            inverted.setSelected(fractal.isInverted());
+            monochrome.setSelected(fractal.isMonochrome());
+            iterationLimit.getValueFactory().setValue(fractal.getIterationLimit());
+
+            this.updateFractal();
+        }
+    }
+
+    @FXML
+    private void save() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"),
-                new FileChooser.ExtensionFilter("JPEG", "*.jpg", "*.jpeg"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Fractal Studio", "*.fsx"));
+        fileChooser.setInitialDirectory(Configuration.getDirectory());
 
         File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
 
         if (file != null) {
+            Configuration.setDirectory(file.getParentFile());
+
+            try {
+                Utils.saveFractal(this.fractal, file);
+
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(Constants.APPLICATION_NAME);
+                    alert.setHeaderText("Save");
+                    alert.setContentText("Fractal saved to file: " + file.getAbsolutePath());
+                    alert.initOwner(canvas.getScene().getWindow());
+                    alert.showAndWait();
+                });
+            } catch (JAXBException e) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(Constants.APPLICATION_NAME);
+                    alert.setHeaderText("Error");
+                    alert.setContentText("Failed to save fractal to file: " + file.getAbsolutePath());
+                    alert.initOwner(canvas.getScene().getWindow());
+                    alert.showAndWait();
+                });
+            }
+        }
+    }
+
+    @FXML
+    private void export() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"),
+                new FileChooser.ExtensionFilter("JPEG", "*.jpg", "*.jpeg"));
+        fileChooser.setInitialDirectory(Configuration.getDirectory());
+
+        File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
+
+        if (file != null) {
+            Configuration.setDirectory(file.getParentFile());
+
             int width = (int) canvas.getWidth();
             int height = (int) canvas.getHeight();
 
@@ -365,7 +508,7 @@ public class Controller {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle(Constants.APPLICATION_NAME);
                         alert.setHeaderText("Error");
-                        alert.setContentText("Failed to save fractal to file: " + file.getAbsolutePath());
+                        alert.setContentText("Failed to export fractal to file: " + file.getAbsolutePath());
                         alert.initOwner(canvas.getScene().getWindow());
                         alert.showAndWait();
                     });
@@ -552,7 +695,7 @@ public class Controller {
         return new Progress(alertReference, controllerReference);
     }
 
-    private String showFunctionDialog() {
+    private Expression<Complex> showFunctionDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
         alert.setTitle(Constants.APPLICATION_NAME);
@@ -578,11 +721,11 @@ public class Controller {
         alert.showAndWait();
 
         if (alert.getResult() == ButtonType.OK) {
-            String function = textField.getText();
+            Expression<Complex> expression = null;
 
             try {
                 ComplexParser parser = new ComplexParser();
-                Expression<Complex> expression = parser.parse(function);
+                expression = parser.parse(textField.getText());
 
                 Map<String, Complex> variables = new HashMap<>();
                 variables.put("z", Complex.NaN);
@@ -591,7 +734,6 @@ public class Controller {
             }
             catch (Expr4jException e) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
-                alert.setHeaderText("Invalid function");
                 errorAlert.initOwner(canvas.getScene().getWindow());
                 errorAlert.showAndWait();
 
@@ -601,7 +743,7 @@ public class Controller {
                 // Do nothing
             }
 
-            return function;
+            return expression;
         }
 
         return null;

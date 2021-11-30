@@ -19,7 +19,10 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#open" text="Open"/>
+                        <MenuItem fx:id="save" disable="true" mnemonicParsing="false" onAction="#save" text="Save"/>
                         <MenuItem mnemonicParsing="false" onAction="#export" text="Export as Image"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem mnemonicParsing="false" onAction="#settingsDialog" text="Settings"/>
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem mnemonicParsing="false" onAction="#exit" text="Exit"/>

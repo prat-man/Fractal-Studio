@@ -16,12 +16,12 @@ public abstract class Fractal implements Runnable {
     private boolean kill;
 
     private double size;
-    private double scale;
-    private double zoom;
     private boolean smooth;
     private boolean inverted;
     private boolean monochrome;
     private Point center;
+    private double scale;
+    private double zoom;
     private double iterationLimit;
     private WritableImage image;
 
@@ -37,22 +37,6 @@ public abstract class Fractal implements Runnable {
 
     public void setSize(double size) {
         this.size = size;
-    }
-
-    public double getScale() {
-        return scale;
-    }
-
-    public void setScale(double scale) {
-        this.scale = scale;
-    }
-
-    public double getZoom() {
-        return zoom;
-    }
-
-    public void setZoom(double zoom) {
-        this.zoom = zoom;
     }
 
     public boolean isSmooth() {
@@ -85,6 +69,22 @@ public abstract class Fractal implements Runnable {
 
     public void setCenter(Point center) {
         this.center = center;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+
+    public double getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
     }
 
     public double getIterationLimit() {

@@ -100,6 +100,7 @@ public class Controller {
     @FXML private Label fractalFunction;
 
     @FXML private MenuItem save;
+    @FXML private MenuItem export;
 
     private Fractal fractal;
     private WritableImage image;
@@ -274,10 +275,13 @@ public class Controller {
             if (!fractal.isInterrupted()) {
                 this.image = fractal.getImage();
                 this.updatePlot();
-            }
 
-            if (save.isDisable()) {
-                save.setDisable(false);
+                if (save.isDisable()) save.setDisable(false);
+                if (export.isDisable()) export.setDisable(false);
+            }
+            else {
+                if (!save.isDisable()) save.setDisable(true);
+                if (!export.isDisable()) export.setDisable(true);
             }
         });
         fractalThread.start();
@@ -429,7 +433,8 @@ public class Controller {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"),
-                new FileChooser.ExtensionFilter("JPEG", "*.jpg", "*.jpeg"));
+                new FileChooser.ExtensionFilter("JPEG", "*.jpg", "*.jpeg"),
+                new FileChooser.ExtensionFilter("BMP", "*.bmp"));
         fileChooser.setInitialDirectory(Configuration.getDirectory());
 
         File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());

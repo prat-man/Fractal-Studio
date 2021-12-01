@@ -17,28 +17,86 @@
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="true" text="_File">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#open" text="Open"/>
-                        <MenuItem fx:id="save" disable="true" mnemonicParsing="false" onAction="#save" text="Save"/>
-                        <MenuItem mnemonicParsing="false" onAction="#export" text="Export as Image"/>
+                        <MenuItem accelerator="Shortcut+O" mnemonicParsing="true" onAction="#open" text="_Open">
+                            <graphic>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/open.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </MenuItem>
+                        <MenuItem fx:id="save" accelerator="Shortcut+S" disable="true" mnemonicParsing="true"
+                                  onAction="#save" text="_Save">
+                            <graphic>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/save.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </MenuItem>
+                        <MenuItem fx:id="export" disable="true" mnemonicParsing="true" onAction="#export"
+                                  text="_Export as Image">
+                            <graphic>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/export.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" onAction="#settingsDialog" text="Settings"/>
+                        <MenuItem mnemonicParsing="true" onAction="#settingsDialog" text="Se_ttings">
+                            <graphic>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/settings.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" onAction="#exit" text="Exit"/>
+                        <MenuItem mnemonicParsing="true" onAction="#exit" text="E_xit">
+                            <graphic>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/exit.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </MenuItem>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Plot">
+                <Menu mnemonicParsing="true" text="_Plot">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#mandelbrot" text="Mandelbrot"/>
-                        <MenuItem mnemonicParsing="false" onAction="#burningShip" text="Burning Ship"/>
-                        <MenuItem mnemonicParsing="false" onAction="#julia" text="Julia"/>
-                        <MenuItem mnemonicParsing="false" onAction="#newtonRaphson" text="Newton Raphson"/>
+                        <MenuItem mnemonicParsing="true" onAction="#mandelbrot" text="_Mandelbrot"/>
+                        <MenuItem mnemonicParsing="true" onAction="#burningShip" text="_Burning Ship">
+                            <graphic>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/ship.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="true" onAction="#julia" text="_Julia"/>
+                        <MenuItem mnemonicParsing="true" onAction="#newtonRaphson" text="_Newton Raphson"/>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="true" text="_Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#about" text="About"/>
+                        <MenuItem mnemonicParsing="true" onAction="#about" text="_About">
+                            <graphic>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/about.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </MenuItem>
                     </items>
                 </Menu>
             </menus>

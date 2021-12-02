@@ -64,6 +64,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -303,16 +304,23 @@ public class Controller {
         File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
 
         if (file != null) {
-            Configuration.setDirectory(file.getParentFile());
+            String filePath = file.getAbsolutePath();
+            if (!filePath.endsWith(".fsx")) {
+                filePath += ".fsx";
+            }
+
+            File actualFile = new File(filePath);
+
+            Configuration.setDirectory(actualFile.getParentFile());
 
             try {
-                this.fractal = Utils.loadFractal(file);
+                this.fractal = Utils.loadFractal(actualFile);
             } catch (JAXBException e) {
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle(Constants.APPLICATION_NAME);
                     alert.setHeaderText("Error");
-                    alert.setContentText("Failed to open fractal from file: " + file.getAbsolutePath());
+                    alert.setContentText("Failed to open fractal from file: " + actualFile.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
                     alert.showAndWait();
                 });
@@ -402,16 +410,23 @@ public class Controller {
         File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
 
         if (file != null) {
-            Configuration.setDirectory(file.getParentFile());
+            String filePath = file.getAbsolutePath();
+            if (!filePath.endsWith(".fsx")) {
+                filePath += ".fsx";
+            }
+
+            File actualFile = new File(filePath);
+
+            Configuration.setDirectory(actualFile.getParentFile());
 
             try {
-                Utils.saveFractal(this.fractal, file);
+                Utils.saveFractal(this.fractal, actualFile);
 
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(Constants.APPLICATION_NAME);
                     alert.setHeaderText("Save");
-                    alert.setContentText("Fractal saved to file: " + file.getAbsolutePath());
+                    alert.setContentText("Fractal saved to file: " + actualFile.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
                     alert.showAndWait();
                 });
@@ -420,7 +435,7 @@ public class Controller {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle(Constants.APPLICATION_NAME);
                     alert.setHeaderText("Error");
-                    alert.setContentText("Failed to save fractal to file: " + file.getAbsolutePath());
+                    alert.setContentText("Failed to save fractal to file: " + actualFile.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
                     alert.showAndWait();
                 });
@@ -440,7 +455,27 @@ public class Controller {
         File file = fileChooser.showSaveDialog(canvas.getScene().getWindow());
 
         if (file != null) {
-            Configuration.setDirectory(file.getParentFile());
+            FileChooser.ExtensionFilter filter = fileChooser.getSelectedExtensionFilter();
+            List<String> extensions = filter.getExtensions();
+
+            String extension = extensions.get(0).substring(1);
+            String fileName = file.getName().toLowerCase();
+            for (String ext : extensions) {
+                ext = ext.substring(1);
+                if (fileName.endsWith(ext)) {
+                    extension = ext;
+                    break;
+                }
+            }
+
+            String filePath = file.getAbsolutePath();
+            if (!filePath.endsWith(extension)) {
+                filePath += extension;
+            }
+
+            File actualFile = new File(filePath);
+
+            Configuration.setDirectory(actualFile.getParentFile());
 
             int width = (int) canvas.getWidth();
             int height = (int) canvas.getHeight();
@@ -450,7 +485,7 @@ public class Controller {
 
             WritableImage finalImage = image;
             Thread thread = new Thread(() -> {
-                String suffix = FilenameUtils.getExtension(file.getName());
+                String suffix = FilenameUtils.getExtension(actualFile.getName());
                 ImageWriter writer = ImageIO.getImageWritersBySuffix(suffix).next();
 
                 Progress progress = this.showProgressDialog("Exporting image", "Please wait. The image is being saved to file.", writer::abort);
@@ -478,7 +513,7 @@ public class Controller {
                         }
 
                         try {
-                            Desktop.getDesktop().open(file);
+                            Desktop.getDesktop().open(actualFile);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -499,7 +534,7 @@ public class Controller {
                     }
                 });
 
-                try (ImageOutputStream stream = ImageIO.createImageOutputStream(file)) {
+                try (ImageOutputStream stream = ImageIO.createImageOutputStream(actualFile)) {
                     writer.setOutput(stream);
                     writer.write(bufferedImage);
                 } catch (IOException e) {
@@ -513,13 +548,13 @@ public class Controller {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle(Constants.APPLICATION_NAME);
                         alert.setHeaderText("Error");
-                        alert.setContentText("Failed to export fractal to file: " + file.getAbsolutePath());
+                        alert.setContentText("Failed to export fractal to file: " + actualFile.getAbsolutePath());
                         alert.initOwner(canvas.getScene().getWindow());
                         alert.showAndWait();
                     });
                 } finally {
                     if (aborted.get()) {
-                        file.delete();
+                        actualFile.delete();
                     }
                 }
             });

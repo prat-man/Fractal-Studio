@@ -112,7 +112,7 @@ public abstract class Fractal implements Runnable {
         int threadIndex = 0;
 
         int yIncr = (int) (canvasHeight / threadCount);
-        double factor = scale / zoom;
+        double factor = scale / Math.pow(10, zoom);
 
         double x, y;
 

@@ -81,6 +81,12 @@ public class Controller {
     @FXML private StackPane canvasHolder;
     @FXML private ScrollPane canvasScroll;
 
+    @FXML private HBox titleHolder;
+    @FXML private ScrollPane titleScroll;
+
+    @FXML private Label realPosition;
+    @FXML private Label imaginaryPosition;
+
     @FXML private Button update;
 
     @FXML private ToggleSwitch smooth;
@@ -119,6 +125,14 @@ public class Controller {
                         canvasScroll.getViewportBounds().getHeight(),
                 canvasScroll.viewportBoundsProperty()));
 
+        titleHolder.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
+                        titleScroll.getViewportBounds().getWidth(),
+                titleScroll.viewportBoundsProperty()));
+
+        titleHolder.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
+                        titleScroll.getViewportBounds().getHeight(),
+                titleScroll.viewportBoundsProperty()));
+
         centerX.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.matches("[+-]?\\d*(\\.\\d*)?")) {
                 centerX.setText(oldVal);
@@ -144,7 +158,7 @@ public class Controller {
 
         canvas.setOnMouseReleased(event -> {
             if (pickCenter.isSelected() && !dragged.get()) {
-                double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / (zoom.getValue() == null ? 1.0 : zoom.getValue());
+                double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / Math.pow(10, zoom.getValue() == null ? 0.0 : zoom.getValue());
 
                 double xCenter = FractalUtils.precision(((event.getX() / canvas.getWidth()) - 0.5) * 2.0 * factor + currentXCenter, 11);
                 double yCenter = FractalUtils.precision((0.5 - (event.getY() / canvas.getHeight())) * 2.0 * factor + currentYCenter, 11);
@@ -160,6 +174,19 @@ public class Controller {
             if (pickCenter.isSelected()) canvas.setCursor(Cursor.HAND);
             else canvas.setCursor(Cursor.DEFAULT);
             dragged.set(false);
+        });
+
+        canvas.setOnMouseMoved(event -> {
+            double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / Math.pow(10, zoom.getValue() == null ? 0.0 : zoom.getValue());
+
+            double xPosition = FractalUtils.precision(((event.getX() / canvas.getWidth()) - 0.5) * 2.0 * factor + currentXCenter, 11);
+            double yPosition = FractalUtils.precision((0.5 - (event.getY() / canvas.getHeight())) * 2.0 * factor + currentYCenter, 11);
+
+            DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            df.setMaximumFractionDigits(11);
+
+            realPosition.setText("Real : " + df.format(xPosition));
+            imaginaryPosition.setText("Imaginary : " + df.format(yPosition));
         });
 
         showOrigin.selectedProperty().addListener((observable, oldValue, newValue) -> this.updatePlot());
@@ -238,7 +265,7 @@ public class Controller {
         currentYCenter = Double.valueOf(centerY.getText());
 
         fractal.setScale(scale.getValue() == null ? 2.0 : scale.getValue());
-        fractal.setZoom(zoom.getValue() == null ? 1.0 : zoom.getValue());
+        fractal.setZoom(zoom.getValue() == null ? 0.0 : zoom.getValue());
         fractal.setSmooth(smooth.isSelected());
         fractal.setInverted(inverted.isSelected());
         fractal.setMonochrome(monochrome.isSelected());
@@ -793,7 +820,7 @@ public class Controller {
         boolean showOrigin = this.showOrigin.isSelected();
         boolean showCenter = this.showCenter.isSelected();
         Point center = new Point(currentXCenter, currentYCenter);
-        double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / (zoom.getValue() == null ? 1.0 : zoom.getValue());
+        double factor = (scale.getValue() == null ? 2.0 : scale.getValue()) / Math.pow(10, zoom.getValue() == null ? 0.0 : zoom.getValue());
 
         canvas.setWidth(Configuration.getCanvasSize());
         canvas.setHeight(Configuration.getCanvasSize());

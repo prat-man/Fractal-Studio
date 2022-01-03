@@ -29,9 +29,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
@@ -40,6 +42,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -199,6 +203,48 @@ public class Controller {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.setFill(Color.BLACK);
             gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        });
+
+        // Context menu for title
+        MenuItem copyTitleMenu = new MenuItem("_Title");
+        copyTitleMenu.setMnemonicParsing(true);
+        copyTitleMenu.setOnAction(e -> {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(fractalName.getText());
+            clipboard.setContent(content);
+        });
+
+        MenuItem copyFunctionMenu = new MenuItem("_Function");
+        copyFunctionMenu.setMnemonicParsing(true);
+        copyFunctionMenu.setOnAction(e -> {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(fractalFunction.getText());
+            clipboard.setContent(content);
+        });
+
+        MenuItem copyBothMenu = new MenuItem("_Both");
+        copyBothMenu.setMnemonicParsing(true);
+        copyBothMenu.setOnAction(e -> {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(fractalName.getText() + " : " + fractalFunction.getText());
+            clipboard.setContent(content);
+        });
+
+        Menu copyMenu = new Menu("_Copy");
+        copyMenu.setMnemonicParsing(true);
+        copyMenu.getItems().addAll(copyTitleMenu, copyFunctionMenu, copyBothMenu);
+
+        ContextMenu menu = new ContextMenu(copyMenu);
+
+        titleHolder.setOnContextMenuRequested(event -> {
+            copyTitleMenu.setDisable(fractalName.getText().isBlank());
+            copyFunctionMenu.setDisable(fractalFunction.getText().isBlank());
+            copyBothMenu.setDisable(fractalName.getText().isBlank() || fractalFunction.getText().isBlank());
+
+            menu.show(titleHolder.getScene().getWindow(), event.getScreenX(), event.getScreenY());
         });
     }
 

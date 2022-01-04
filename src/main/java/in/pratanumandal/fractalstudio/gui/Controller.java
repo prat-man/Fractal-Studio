@@ -49,6 +49,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -88,6 +89,7 @@ public class Controller {
     @FXML private HBox titleHolder;
     @FXML private ScrollPane titleScroll;
 
+    @FXML private HBox positionHolder;
     @FXML private Label realPosition;
     @FXML private Label imaginaryPosition;
 
@@ -189,9 +191,19 @@ public class Controller {
             DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
             df.setMaximumFractionDigits(11);
 
-            realPosition.setText("Real : " + df.format(xPosition));
-            imaginaryPosition.setText("Imaginary : " + df.format(yPosition));
+            realPosition.setText(df.format(xPosition));
+            imaginaryPosition.setText(df.format(yPosition));
         });
+
+        canvas.setOnMouseExited(event -> {
+            realPosition.setText("");
+            imaginaryPosition.setText("");
+        });
+
+        Text text = new Text("+000.00000000000");
+        double textWidth = text.getBoundsInLocal().getWidth();
+        realPosition.setMinWidth(textWidth);
+        imaginaryPosition.setMinWidth(textWidth);
 
         showOrigin.selectedProperty().addListener((observable, oldValue, newValue) -> this.updatePlot());
         showCenter.selectedProperty().addListener((observable, oldValue, newValue) -> this.updatePlot());
@@ -229,7 +241,7 @@ public class Controller {
         copyBothMenu.setOnAction(e -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             ClipboardContent content = new ClipboardContent();
-            content.putString(fractalName.getText() + " : " + fractalFunction.getText());
+            content.putString(fractalName.getText() + ": " + fractalFunction.getText());
             clipboard.setContent(content);
         });
 

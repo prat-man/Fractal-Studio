@@ -8,9 +8,11 @@ import in.pratanumandal.fractalstudio.fractals.Julia;
 import in.pratanumandal.fractalstudio.fractals.Mandelbrot;
 import in.pratanumandal.fractalstudio.fractals.NewtonRaphson;
 import in.pratanumandal.fractalstudio.gui.GUI;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.math3.complex.Complex;
@@ -25,6 +27,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Optional;
 
 public class Utils {
 
@@ -129,6 +132,66 @@ public class Utils {
         fractal.setIterationLimit(fractalFile.getIterationLimit());
 
         return fractal;
+    }
+
+    public static Optional<ButtonType> showAndWait(Alert alert) {
+        if (Utils.isKDE()) {
+            alert.setResizable(true);
+
+            alert.setOnShowing(event -> {
+                Thread thread = new Thread(() -> {
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    Platform.runLater(() -> {
+                        alert.setResizable(false);
+
+                        if (alert.getOwner() != null) {
+                            alert.getOwner().requestFocus();
+                        }
+                    });
+                });
+
+                thread.start();
+            });
+        }
+
+        return alert.showAndWait();
+    }
+
+    public static void showAndWait(Dialog dialog) {
+        if (Utils.isKDE()) {
+            dialog.setResizable(true);
+
+            dialog.setOnShowing(event -> {
+                Thread thread = new Thread(() -> {
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    Platform.runLater(() -> {
+                        dialog.setResizable(false);
+
+                        if (dialog.getOwner() != null) {
+                            dialog.getOwner().requestFocus();
+                        }
+                    });
+                });
+
+                thread.start();
+            });
+        }
+
+        dialog.showAndWait();
+    }
+
+    public static boolean isKDE() {
+        return System.getenv("KDE_SESSION_VERSION") != null;
     }
 
 }

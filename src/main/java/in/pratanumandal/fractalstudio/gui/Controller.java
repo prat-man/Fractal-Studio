@@ -407,7 +407,7 @@ public class Controller {
                     alert.setHeaderText("Error");
                     alert.setContentText("Failed to open fractal from file: " + actualFile.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
-                    alert.showAndWait();
+                    Utils.showAndWait(alert);
                 });
 
                 return;
@@ -436,7 +436,7 @@ public class Controller {
                 catch (Expr4jException e) {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
                     errorAlert.initOwner(canvas.getScene().getWindow());
-                    errorAlert.showAndWait();
+                    Utils.showAndWait(errorAlert);
 
                     return;
                 }
@@ -459,7 +459,7 @@ public class Controller {
                 catch (Expr4jException e) {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
                     errorAlert.initOwner(canvas.getScene().getWindow());
-                    errorAlert.showAndWait();
+                    Utils.showAndWait(errorAlert);
 
                     return;
                 }
@@ -513,7 +513,7 @@ public class Controller {
                     alert.setHeaderText("Save");
                     alert.setContentText("Fractal saved to file: " + actualFile.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
-                    alert.showAndWait();
+                    Utils.showAndWait(alert);
                 });
             } catch (JAXBException e) {
                 Platform.runLater(() -> {
@@ -522,7 +522,7 @@ public class Controller {
                     alert.setHeaderText("Error");
                     alert.setContentText("Failed to save fractal to file: " + actualFile.getAbsolutePath());
                     alert.initOwner(canvas.getScene().getWindow());
-                    alert.showAndWait();
+                    Utils.showAndWait(alert);
                 });
             }
         }
@@ -635,7 +635,7 @@ public class Controller {
                         alert.setHeaderText("Error");
                         alert.setContentText("Failed to export fractal to file: " + actualFile.getAbsolutePath());
                         alert.initOwner(canvas.getScene().getWindow());
-                        alert.showAndWait();
+                        Utils.showAndWait(alert);
                     });
                 } finally {
                     if (aborted.get()) {
@@ -676,7 +676,7 @@ public class Controller {
         alert.getDialogPane().contentProperty().set(root);
         alert.initOwner(canvas.getScene().getWindow());
 
-        Optional<ButtonType> result = alert.showAndWait();
+        Optional<ButtonType> result = Utils.showAndWait(alert);
 
         if (result.isPresent() && result.get() == apply) {
             Configuration.setCanvasSize(controller.getCanvasSize());
@@ -766,7 +766,7 @@ public class Controller {
         dialog.getDialogPane().contentProperty().set(pane);
 
         dialog.initOwner(canvas.getScene().getWindow());
-        dialog.showAndWait();
+        Utils.showAndWait(dialog);
     }
 
     @FXML
@@ -810,7 +810,7 @@ public class Controller {
             alert.getDialogPane().contentProperty().set(root);
             alert.initOwner(canvas.getScene().getWindow());
 
-            Optional<ButtonType> result = alert.showAndWait();
+            Optional<ButtonType> result = Utils.showAndWait(alert);
 
             if (result.isPresent() && result.get() == abort) {
                 function.execute();
@@ -843,7 +843,7 @@ public class Controller {
         button.disableProperty().bind(Bindings.isEmpty(textField.textProperty()));
 
         alert.initOwner(canvas.getScene().getWindow());
-        alert.showAndWait();
+        Utils.showAndWait(alert);
 
         if (alert.getResult() == ButtonType.OK) {
             Expression<Complex> expression = null;
@@ -860,7 +860,7 @@ public class Controller {
             catch (Expr4jException e) {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR, e.getMessage(), null);
                 errorAlert.initOwner(canvas.getScene().getWindow());
-                errorAlert.showAndWait();
+                Utils.showAndWait(errorAlert);
 
                 return null;
             }

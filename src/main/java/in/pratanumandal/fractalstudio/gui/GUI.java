@@ -50,7 +50,7 @@ public class GUI extends Application {
             Utils.setDefaultButton(alert, ButtonType.NO);
 
             alert.initOwner(primaryStage);
-            alert.showAndWait();
+            Utils.showAndWait(alert);
 
             if (alert.getResult() == ButtonType.YES) {
                 System.exit(0);

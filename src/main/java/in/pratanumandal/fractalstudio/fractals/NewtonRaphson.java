@@ -16,10 +16,15 @@ public class NewtonRaphson extends Fractal {
     private static final double EPSILON = Math.pow(10, -6);
 
     private static final Color[] COLORS = {
-            Color.RED,
-            Color.rgb(57,125,209),
-            Color.GREEN,
-            Color.rgb(255,170,0)
+            Color.rgb( 44, 237, 205),
+            Color.rgb(170, 240,  32),
+            Color.rgb(225, 155, 202),
+            Color.rgb(250, 200,  80),
+            Color.rgb( 34, 161, 239),
+            Color.rgb(148, 213,  64),
+            Color.rgb(255, 204, 204),
+            Color.rgb(250,  40,  70),
+            Color.rgb(199, 199, 199)
     };
 
     public final Expression<Complex> expression;

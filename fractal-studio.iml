@@ -48,7 +48,7 @@
     <orderEntry type="module-library">
       <library name="Maven: in.pratanumandal:expr4j:1.0">
         <CLASSES>
-          <root url="jar://C:/expr4j/expr4j-1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/expr4j-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -162,7 +162,7 @@
             <artifactId>expr4j</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>C:/expr4j/expr4j-1.0.jar</systemPath>
+            <systemPath>${project.basedir}/lib/expr4j-1.0.jar</systemPath>
         </dependency>
     </dependencies>
 

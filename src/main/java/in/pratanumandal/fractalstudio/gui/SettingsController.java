@@ -17,6 +17,8 @@ public class SettingsController {
         canvasSize.getValueFactory().setValue(Configuration.getCanvasSize());
         threadCount.getValueFactory().setValue(Configuration.getThreadCount());
 
+        mode.prefWidthProperty().bind(threadCount.widthProperty());
+
         switch (Configuration.getMode()) {
             default:
             case PERFORMANCE:

@@ -183,9 +183,7 @@
                                                                                        min="0.0"/>
                                     </valueFactory>
                                     <tooltip>
-                                        <Tooltip maxWidth="200"
-                                                 text="Zoom as a power of 10"
-                                                 wrapText="true"/>
+                                        <Tooltip maxWidth="200" text="Zoom as a power of 10" wrapText="true"/>
                                     </tooltip>
                                 </Spinner>
                             </children>
@@ -280,7 +278,7 @@
                 <Insets/>
             </BorderPane.margin>
             <padding>
-                <Insets bottom="1.0" left="10.0" right="10.0" top="2.0"/>
+                <Insets bottom="2.0" left="10.0" right="10.0" top="2.0"/>
             </padding>
         </StatusBar>
     </bottom>

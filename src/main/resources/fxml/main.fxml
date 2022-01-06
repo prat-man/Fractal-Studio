@@ -162,7 +162,7 @@
                                 <Spinner fx:id="scale" editable="true">
                                     <valueFactory>
                                         <SpinnerValueFactory.DoubleSpinnerValueFactory amountToStepBy="1.0"
-                                                                                       initialValue="2.0" max="100.0"
+                                                                                       initialValue="2.0" max="1000.0"
                                                                                        min="1.0"/>
                                     </valueFactory>
                                     <tooltip>

@@ -7,11 +7,8 @@ import in.pratanumandal.fractalstudio.core.Point;
 import javafx.scene.paint.Color;
 import org.apache.commons.math3.complex.Complex;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class NewtonRaphson extends Fractal {
@@ -25,8 +22,8 @@ public class NewtonRaphson extends Fractal {
             Color.rgb(250, 200,  80),
             Color.rgb(225, 155, 202),
             Color.rgb( 44, 237, 205),
-            Color.rgb(255, 204, 204),
-            Color.rgb(199, 199, 199)
+            Color.rgb(120, 201, 133),
+            Color.rgb(255, 204, 204)
     };
 
     public final Expression<Complex> expression;

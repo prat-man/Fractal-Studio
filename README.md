@@ -1,7 +1,5 @@
 <img src="https://github.com/prat-man/Fractal-Studio/raw/main/src/main/resources/img/icon.png" width="150">
 
-<br>
-
 # Fractal Studio
 A modern application for generating different types of fractals.<br>
 It supports Windows, OSX, and Linux.

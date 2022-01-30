@@ -1,4 +1,4 @@
-<img src="https://github.com/prat-man/Fractal-Studio/raw/main/src/main/resources/img/icon.png" width="200">
+<img src="https://github.com/prat-man/Fractal-Studio/raw/main/src/main/resources/img/icon.png" width="150">
 
 <br>
 

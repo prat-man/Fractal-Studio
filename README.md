@@ -1,4 +1,4 @@
-![Fractal Studio logo](/src/main/resources/img/icon.png)
+<img src="https://github.com/prat-man/Fractal-Studio/raw/main/src/main/resources/img/icon.png" width="200">
 
 <br>
 

@@ -25,4 +25,4 @@ Fractal Studio is written in Java 11 and uses JavaFX for its user interface.
 
 ## License
 
-[GNU Public License v3.0](https://github.com/prat-man/Fractal-Studio/blob/master/LICENSE)
+[GNU Public License v3.0](https://github.com/prat-man/Fractal-Studio/blob/main/LICENSE)
